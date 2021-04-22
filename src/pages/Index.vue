@@ -1,72 +1,80 @@
 <template>
-  <q-page class="row flex-center">
-    <textarea class="col" style="height: 800px" v-model="tabelasRaw">
-
-    </textarea>
-    <button @click="computar">
-      COMPUTAR
-    </button>
-    <button @click="atualizar">
-      ATT
-    </button>
+  <q-page class="col">
+    <div>
+      <button @click="computar">
+        COMPUTAR
+      </button>
+    </div>
+    <div>
+      <div>{{`${vetores.length} vetores. ${solucoes.length} soluções`}}</div>
+    </div>
   </q-page>
 </template>
 
 <script>
+import {multiplicar, Vetor} from 'src/lib/cartesiano.js'
+import {Solucao} from 'src/lib/solucao.js'
+import * as JSP from 'src/lib/JSP.js'
+
+
+async function solucionar (vetores) {
+  const solucoes = [new Solucao()]
+  let i=0
+  for (const vetor of vetores) {
+    const novasSolucoes = []
+    for (let solucao of solucoes) {
+      let novaSolucao = new Solucao()
+      solucao.map(v => novaSolucao.push(v))
+      novaSolucao.push(vetor)
+
+      if (novaSolucao.eValida()) {
+        novasSolucoes.push(novaSolucao)
+      }
+    }
+    novasSolucoes.map(s => solucoes.push(s))
+    console.log(i++)
+  }
+  return solucoes
+}
+
+
 export default {
   name: 'PageIndex',
   data () {
     return {
-      tabelasRaw: '',
       tabelas: [],
+      tabelasParsed: [],
+
+      vetores: [],
       solucoes: []
     }
   },
   methods: {
-    computar: function () {
-      let combinacoes = this.tabelas[0].rows
-      for (let i=1; i < this.tabelas.length; ++i) {
-        combinacoes = this.cartesiano(combinacoes, this.tabelas[i].rows)
+    computar () {
+      let vetores = this.tabelasParsed[0].rows
+      for (let i=1; i < this.tabelasParsed.length; ++i) {
+        vetores = multiplicar(vetores, this.tabelasParsed[i].rows)
+      }
+      console.log(vetores)
 
-        for (let combinacao of combinacoes) {
-          console.log(`${JSON.stringify(combinacao)}`)
-        }
-        console.log(`${combinacoes.length} possibilidades`)
-      }
-    },
-    filtrar: function (arr) {
-      const merged = {}
-      for (let a of arr) {
-        Object.assign(merged, a)
-      }
-      for (let a of arr) {
-        if (a.filtrar && a.filtrar(merged) === false) {
-          return false
-        }
-      }
-      return true
-    },
-    cartesiano: function (a, b) {
-      let resultado = []
-      for (let i of a) {
-        for (let x of b) {
-          const combinacao = [i, x].flat()
-
-          // Só adiciona se for uma opção possível
-          if (this.filtrar(combinacao)) {
-            resultado.push(combinacao)
-          }
+      solucionar(vetores).then(value => this.solucoes = value)
+    }
+  },
+  mounted () {
+    const tabelasRaw = localStorage.getItem('tabelas')
+    if (tabelasRaw) { 
+      console.log(`Carregando tabelas do localStorage`)
+      
+      this.tabelas = JSON.parse(tabelasRaw)
+      
+      this.tabelasParsed = this.tabelas.map(t => parseTabela(t))
+      function parseTabela (obj) { 
+        return {
+          descricao: JSP.parse(obj.descricao),
+          geral: JSP.parse(obj.geral),
+          rows: obj.rows.map(r => JSP.parse(r))
         }
       }
-      return resultado
-    },
-    atualizar: function () {
-      this.tabelas = this.looseJsonParse(this.tabelasRaw)
-      console.log(this.tabelas)
-    },
-    // From https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
-    looseJsonParse: function (obj) {
-      return Function('"use strict";return (' + obj + ')')()
     }
   }
 }

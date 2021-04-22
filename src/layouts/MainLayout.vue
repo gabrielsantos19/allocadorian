@@ -1,17 +1,23 @@
 <template>
-  <q-layout view="hHh lpr fFf">
-    <q-header elevated class="flex">
-      <div>
+  <q-layout view="hHh lpr fFf" class="col">
+    <q-header class="row">
+      <div style="font-size: 28px" class="q-mx-lg">
         Allocadorian
       </div>
-      <q-tabs
-          v-model="tab"
-          inline-label
-          class="text-white col"
-      >
-        <q-route-tab to="/" name="mails" icon="mail" label="Home" />
-        <q-route-tab to="/tables" name="alarms" icon="alarm" label="Tables" />
-      </q-tabs>
+      <div>
+        <router-link to="/">
+          <button>Soluções</button>
+        </router-link>
+        <router-link to="/">
+          <button>Vetores</button>
+        </router-link>
+        <router-link to="/tabelas">
+          <button>Tabelas</button>
+        </router-link>
+        
+        <button>Importar sessão</button>
+        <button>Exportar sessão</button>
+      </div>
     </q-header>
 
     <q-page-container>
@@ -26,7 +32,7 @@ export default {
   components: {  },
   data () {
     return {
-      tab: "tab1"
+      
     }
   }
 }

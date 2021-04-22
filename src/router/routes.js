@@ -8,10 +8,10 @@ const routes = [
     ]
   },
   {
-    path: '/tables',
+    path: '/tabelas',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Tables.vue') }
+      { path: '', component: () => import('src/pages/Tabelas.vue') }
     ]
   },
 
