@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh lpr fFf" class="col">
-    <q-header class="row">
+    <q-header class="row" style="background-color: rgb(70,70,70)">
       <div style="font-size: 28px" class="q-mx-lg">
         Allocadorian
       </div>
@@ -8,11 +8,11 @@
         <router-link to="/">
           <button>Soluções</button>
         </router-link>
-        <router-link to="/">
+        <router-link to="/vetores">
           <button>Vetores</button>
         </router-link>
-        <router-link to="/tabelas">
-          <button>Tabelas</button>
+        <router-link to="/conjuntos">
+          <button>Conjuntos</button>
         </router-link>
         
         <button>Importar sessão</button>

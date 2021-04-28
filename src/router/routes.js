@@ -8,10 +8,17 @@ const routes = [
     ]
   },
   {
-    path: '/tabelas',
+    path: '/conjuntos',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('src/pages/Tabelas.vue') }
+      { path: '', component: () => import('src/pages/Conjuntos.vue') }
+    ]
+  },
+  {
+    path: '/vetores',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('src/pages/Vetores.vue') }
     ]
   },
 
