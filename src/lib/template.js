@@ -1,32 +1,54 @@
 export const descricao = 
 `{
-   nome: 'Nova tabela'
+  nome: 'Novo conjunto'
 }`
 
 export const objetoBase = 
-`{algo:3}`
+`{
+  // Objeto base
+
+  baseFiltrarVetor: function (vetor) {
+    return true
+  },
+ 
+  basePontuarVetor: function (vetor) {
+    return 0
+  },
+ 
+  baseFiltrarSolucao: function (solucao) {
+    return true
+  },
+ 
+  basePontuarSolucao: function (solucao) {
+    return 0
+  },
+
+  baseFiltrarFinal: function (solucao) {
+    return true
+  },
+}`
 
 export const objeto = 
 `{
-   nome: 'Novo item',
+  // Novo objeto
 
-   filtrarVetor: function (vetor) {
-       return true
-   },
+  filtrarVetor: function (vetor) {
+    return true
+  },
 
-   pontuarVetor: function (vetor) {
-       return 0
-   },
+  pontuarVetor: function (vetor) {
+    return 0
+  },
 
-   filtrar: function () {
-       return true
-   },
+  filtrarSolucao: function (solucao) {
+    return true
+  },
 
-   filtrarSolucao: function (solucao) {
-       return true
-   },
+  pontuarSolucao: function (solucao) {
+    return 0
+  },
 
-   pontuarSolucao: function (solucao) {
-       return 0
-   }
+  filtrarFinal: function (solucao) {
+    return true
+  }
 }`

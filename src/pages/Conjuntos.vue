@@ -15,22 +15,29 @@
             </button>
           </div>
           <button @click="criarTabela">
-            Nova tabela
+            Novo conjunto
+          </button>
+        </div>
+      </div>
+      <div v-if="tabelaParsed" class="row" style="align-items: center;">
+        <div style="font-size: 55px" class="q-px-md">
+          {{tabelaParsed.descricao.nome}}
+        </div>
+        <div class="q-px-md">
+          {{tabelaParsed.objetos.length}} objetos
+        </div>
+        <div>
+          <button @click="editarObjetoBase">
+            Editar objeto base
+          </button>
+        </div>
+        <div>
+          <button @click="criarObjeto">
+            Novo objeto
           </button>
         </div>
       </div>
       <div v-if="tabelaParsed" class="row">
-        <div style="background-color: rgb(30,200,15)">
-          <div style="font-size: 50px">
-            {{tabelaParsed.descricao.nome}}
-          </div>
-          <button @click="editarObjetoBase">
-            Editar objeto base
-          </button>
-          <button @click="criarObjeto">
-            Novo Objeto
-          </button>
-        </div>
         <Item v-for="(linha, index) in tabelaParsed.objetos" 
           :key="index"
           :titulo="Object.values(linha)[0]"
@@ -57,17 +64,18 @@
 import Item from 'src/components/Item.vue'
 import * as JSP from 'src/lib/JSP.js'
 import * as Template from 'src/lib/template.js'
+import * as Conjunto from 'src/lib/conjunto.js'
 
 export default {
   components: { 
     Item
   },
-  name: 'Tabelas',
+  name: 'Conjuntos',
   data () {
     return {
       // Tabela atualmente em uso
-      tabela: undefined,
-      tabelaParsed: undefined,
+      tabela: null,
+      tabelaParsed: null,
 
       tabelas: [],
       tabelasParsed: [],
@@ -87,7 +95,7 @@ export default {
     },
     criarObjeto () {
       this.editorAberto = true
-      this.editorTitulo = 'Novo item'
+      this.editorTitulo = `${this.tabelaParsed.descricao.nome} > Novo objeto`
       this.editorTexto = Template.objeto
       this.editorSalvar = this.inserirObjeto
     },
@@ -139,6 +147,8 @@ export default {
       this.salvarTabelas()
     },
     removerTabela (index) {
+      this.tabela = null
+      this.tabelaParsed = null
       this.tabelas.splice(index, 1)
       this.tabelasParsed.splice(index, 1)
       this.cancelarEdicao()
@@ -151,7 +161,7 @@ export default {
       this.salvarTabelas()
     },
     salvarTabelas () {
-      localStorage.setItem('tabelas', JSON.stringify(this.tabelas))
+      localStorage.setItem('conjuntos', JSON.stringify(this.tabelas))
     },
     setTabelaAtual (index) {
       this.tabela = this.tabelas[index]
@@ -164,21 +174,9 @@ export default {
     }
   },
   mounted () {
-    const tabelasRaw = localStorage.getItem('tabelas')
-    if (tabelasRaw) { 
-      console.log(`Carregando tabelas do localStorage`)
-      
-      this.tabelas = JSON.parse(tabelasRaw)
-      
-      this.tabelasParsed = this.tabelas.map(t => parseTabela(t))
-      function parseTabela (obj) { 
-        return {
-          descricao: JSP.parse(obj.descricao),
-          objetoBase: JSP.parse(obj.objetoBase),
-          objetos: obj.objetos.map(r => JSP.parse(r))
-        }
-      }
-
+    this.tabelas = Conjunto.getConjuntos()
+    this.tabelasParsed = Conjunto.getConjuntosParsed()
+    if (this.tabelas) { 
       this.setTabelaAtual(0)
     }
   }
