@@ -1,13 +1,6 @@
 import * as JSP from 'src/lib/JSP.js'
 var Parallel = require('paralleljs')
 
-function parseConjunto (obj) {
-  return {
-    descricao: JSP.parse(obj.descricao),
-    objetoBase: JSP.parse(obj.objetoBase),
-    objetos: obj.objetos.map(r => JSP.parse(r))
-  }
-}
 
 function parseCompilado (conjunto) {
   return conjunto.map(o => JSP.parse(o))
@@ -18,7 +11,15 @@ export async function parseCompilados (conjuntos) {
   return conjuntosParsed
 }
 
-export function getConjuntosParsed () {
+function parseConjunto (obj) {
+  return {
+    descricao: JSP.parse(obj.descricao),
+    objetoBase: JSP.parse(obj.objetoBase),
+    objetos: obj.objetos.map(r => JSP.parse(r))
+  }
+}
+
+export async function getConjuntosParsed () {
   const conjuntos = getConjuntos()
   let conjuntosParsed = []
   if (conjuntos) {

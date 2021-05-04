@@ -32,8 +32,7 @@ export default {
     gerarSolucoes () {
       if (this.compilados && this.vetores) {
         Solucao.solucao(this.vetores, this.compilados)
-        .then(solucoes => Solucao.sort(solucoes))
-        .then(sorted => this.solucoes = sorted)
+        .then(solucoes => this.solucoes = solucoes)
       }
     }
   },

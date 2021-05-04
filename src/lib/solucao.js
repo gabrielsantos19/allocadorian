@@ -30,7 +30,7 @@ function filtrarFinal(solucao, vetores, conjuntos) {
 }
 
 
-///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 
 function solucaoXsolucao (solucao1, solucao2) {
@@ -87,6 +87,7 @@ export async function solucao (vetores, conjuntos) {
   
   if (arvore && arvore[0]) {
     const solucoes = arvore[0].filter(s => filtrarFinal(s, vetores, conjuntos))
+    sort(solucoes)
 
     localStorage.setItem('solucoes', JSON.stringify(solucoes))
     return solucoes
@@ -108,6 +109,6 @@ function sortFunction (solucao1, solucao2) {
   return solucao2.p - solucao1.p
 }
 
-export async function sort (solucoes) {
+function sort (solucoes) {
   return solucoes.sort(sortFunction)
 }

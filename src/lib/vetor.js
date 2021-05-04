@@ -1,5 +1,5 @@
 function filtrarVetor (vetor, conjuntos) {
-  const merged = merge(vetor, conjuntos)
+  const merged = vetor.merged
   for (let i=0; i<vetor.i.length; ++i) {
     const objeto = conjuntos[i][vetor.i[i]]
     if (objeto.filtrarVetor && objeto.filtrarVetor(merged) === false) {
@@ -56,25 +56,29 @@ export function filtrarFinal (vetor, conjuntos, solucao) {
 }
 
 
-////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 
-function merge (vetor, conjuntos) {
+function compilar (vetor, conjuntos) {
   const merged = {}
   vetor.i.forEach((ponto, index) => {
     Object.assign(merged, conjuntos[index][ponto])
   })
-  vetor.merged = merged
   return merged
+}
+
+export async function compilarVetores (vetores, conjuntos) {
+  for (let i=0; i<vetores.length; ++i) {
+    vetores[i].merged = compilar(vetores[i], conjuntos)
+  }
+  return vetores
 }
 
 function vetorXconjunto (conjuntos, vetor, conjunto) {
   let produto = []
   conjunto.forEach((e, index) => {
-    const novo = {
-      i: vetor.i.concat(index),
-      merged: {}
-    }
+    const novo = { i: vetor.i.concat(index) }
+    novo.merged = compilar(novo, conjuntos)
 
     if (filtrarVetor(novo, conjuntos)) {
       produto.push(novo)
@@ -107,7 +111,7 @@ export async function cartesiano (conjuntos) {
     vetor.p = pontuarVetor(conjuntos, vetor)
   })
 
-  localStorage.setItem('vetores', JSON.stringify(vetores))
+  setVetores(vetores)
   return vetores
 }
 
@@ -116,8 +120,18 @@ export async function getVetores () {
   return vetores
 }
 
+function setVetores (vetores) {
+  const vetoresRaw = vetores.map(vetor => { 
+    return {
+      i:vetor.i,
+      p: vetor.p
+    }
+  })
+  localStorage.setItem('vetores', JSON.stringify(vetoresRaw))
+}
 
 
+///////////////////////////////////////////////////////////////////////////////
 
 
 function vetorXconjuntos (conjuntos, vetor) {

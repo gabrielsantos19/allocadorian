@@ -15,6 +15,7 @@
 <script>
 import * as Conjunto from 'src/lib/conjunto.js'
 import * as Vetor from 'src/lib/vetor.js'
+import { parse } from 'src/lib/JSP'
 
 export default {
   name: 'Vetores',
@@ -28,8 +29,10 @@ export default {
   methods: {
     gerar () {
       const t0 = performance.now()
-      Vetor.cartesiano(this.conjuntos).then(vetores => {
-        this.vetores = vetores
+      Vetor.cartesiano(this.conjuntos)
+      .then(vetores => Vetor.compilarVetores(vetores, this.conjuntos))
+      .then(compilados => {
+        this.vetores = compilados
         this.vetoresTime = performance.now() - t0
       })
     },
@@ -40,8 +43,14 @@ export default {
     }
   },
   mounted () {
-    Vetor.getVetores().then(vetores => {
-      this.vetores = vetores
+    Conjunto.getConjuntosCompilados()
+    .then(compilados => Conjunto.parseCompilados(compilados))
+    .then(parsed => {
+      this.conjuntos = parsed
+
+      Vetor.getVetores()
+      .then(vetores => Vetor.compilarVetores(vetores, parsed))
+      .then(compilados => this.vetores = compilados)
     })
   }
 }
