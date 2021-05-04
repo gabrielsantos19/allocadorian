@@ -8,7 +8,7 @@
     </div>
     <div v-if="solucoes">
       <div v-for="(solucao, index) in solucoes" :key="index">
-        {{JSON.stringify(solucao)}}
+        {{index}}: {{JSON.stringify(solucao)}}
       </div>
     </div>
   </q-page>
@@ -30,16 +30,22 @@ export default {
   },
   methods: {
     gerarSolucoes () {
-      Solucao.solucao2(this.vetores).then(solucoes => {
-        this.solucoes = solucoes
-      })
+      if (this.compilados && this.vetores) {
+        Solucao.solucao(this.vetores, this.compilados)
+        .then(solucoes => Solucao.sort(solucoes))
+        .then(sorted => this.solucoes = sorted)
+      }
     }
   },
   mounted () {
     Solucao.getSolucoes().then(solucoes => {
       this.solucoes = solucoes
     })
-    this.compilados = Conjunto.getConjuntosCompilados()
+
+    Conjunto.getConjuntosCompilados()
+    .then(compilados => Conjunto.parseCompilados(compilados))
+    .then(parsed => this.compilados = parsed)
+
     Vetor.getVetores().then(vetores => {
       this.vetores = vetores
     })

@@ -6,7 +6,7 @@
     {{vetoresTime ? `gerados em ${vetoresTime} milisegundos` : 'carregados'}}
     <div v-if="vetores">
       <div v-for="(vetor, index) in vetores" :key="index">
-        {{JSON.stringify(vetor)}}
+        {{index}}: {{JSON.stringify(vetor)}}
       </div>
     </div>
   </q-page>
@@ -34,9 +34,9 @@ export default {
       })
     },
     compilar () {
-      Conjunto.compilarConjuntos().then(val => {
-        this.conjuntos = Conjunto.parseCompilados(val)
-      })
+      Conjunto.compilarConjuntos()
+      .then(val => Conjunto.parseCompilados(val))
+      .then(parsed => this.conjuntos = parsed)
     }
   },
   mounted () {

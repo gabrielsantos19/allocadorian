@@ -13,7 +13,7 @@ function parseCompilado (conjunto) {
   return conjunto.map(o => JSP.parse(o))
 }
 
-export function parseCompilados (conjuntos) {
+export async function parseCompilados (conjuntos) {
   let conjuntosParsed = conjuntos.map(c => parseCompilado(c))
   return conjuntosParsed
 }
@@ -57,7 +57,7 @@ export async function compilarConjuntos () {
   return compilados
 }
 
-export function getConjuntosCompilados () {
+export async function getConjuntosCompilados () {
   const compilados = localStorage.getItem('compilados')
   if (compilados) {
     return JSON.parse(compilados)
