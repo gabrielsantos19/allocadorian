@@ -19,16 +19,13 @@ function parseConjunto (obj) {
   }
 }
 
-export function getConjuntosParsed () {
-  const conjuntos = getConjuntos()
+export async function parseConjuntos (conjuntos) {
   let conjuntosParsed = []
-  if (conjuntos) {
-    conjuntosParsed = conjuntos.map(c => parseConjunto(c))
-  }
+  conjuntosParsed = conjuntos.map(c => parseConjunto(c))
   return conjuntosParsed
 }
 
-export function getConjuntos () {
+export async function getConjuntos () {
   const conjuntosRaw = localStorage.getItem('conjuntos')
   if (conjuntosRaw) {
     return JSON.parse(conjuntosRaw)

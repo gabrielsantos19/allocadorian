@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh lpr fFf" class="col">
-    <q-header class="row" style="background-color: rgb(70,70,70)">
+    <q-header class="row" style="align-items: center; background-color: rgb(70,70,70)">
       <div style="font-size: 28px" class="q-mx-lg">
         Allocadorian
       </div>
@@ -32,11 +32,7 @@ export default {
   components: {  },
   data () {
     return {
-      
     }
-  },
-  methods: {
-
   }
 }
 </script>

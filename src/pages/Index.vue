@@ -5,10 +5,13 @@
       {{compilados ? compilados.length : '0'}} conjuntos carregados
       {{vetores ? vetores.length : '0'}} vetores carregados
       {{solucoes ? solucoes.length : '0'}} solucoes
+      {{tSolucoes ? `em ${tSolucoes}ms` : ''}}
     </div>
-    <div v-if="solucoes" class="row">
-      <div v-for="(solucao, index) in solucoes" :key="index">
-        <solucao-component :solucao="solucao" />
+    <div v-if="sliced" class="row">
+      <div v-for="(solucao, index) in sliced" :key="index">
+        <solucao-component 
+          :solucao="solucao" 
+          @click="$router.push('/solucao?id='+index)"/>
       </div>
     </div>
   </q-page>
@@ -29,22 +32,35 @@ export default {
     return {
       compilados: null,
       vetores: null,
-      solucoes: null
+      solucoes: null,
+      tSolucoes: null
+    }
+  },
+  computed: {
+    sliced: function () {
+      if (this.solucoes) {
+        return this.solucoes.slice(0, 25)
+      }
+      return []
     }
   },
   methods: {
     gerarSolucoes () {
       if (this.compilados && this.vetores) {
+        const t0 = performance.now()
+
         this.solucoes = null
         Solucao.solucao(this.vetores, this.compilados)
         .then(solucoes => Solucao.linkarSolucoes(solucoes, this.vetores))
-        .then(linkados => this.solucoes = linkados)
+        .then(linkados => {
+          this.solucoes = linkados
+          this.tSolucoes = performance.now() - t0
+        })
       }
     },
     carregarVetores () {
       Vetor.getVetores()
-      .then(vetores => Vetor.compilarVetores(vetores, this.compilados))
-      .then(compilados => Vetor.linkarVetores(compilados, this.compilados))
+      .then(vetores => Vetor.linkarVetores(vetores, this.compilados))
       .then(linkados => {
         this.vetores = linkados
         this.carregarSolucoes()

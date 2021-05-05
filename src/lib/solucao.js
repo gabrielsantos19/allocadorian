@@ -49,6 +49,10 @@ export async function linkarSolucoes (solucoes, vetores) {
   return solucoes
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+
+
 function solucaoXsolucao (solucao1, solucao2) {
   return {
     i: [solucao1.i, solucao2.i].flat(),
@@ -104,14 +108,17 @@ export async function solucao (vetores, conjuntos) {
   if (arvore && arvore[0]) {
     const solucoes = arvore[0].filter(s => filtrarFinal(s, vetores, conjuntos))
     sort(solucoes)
-
-    localStorage.setItem('solucoes', JSON.stringify(solucoes))
+    setSolucoes(solucoes)
     return solucoes
   } else {
-    localStorage.setItem('solucoes', JSON.stringify([]))
+    setSolucoes([])
     return []
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+
 
 export async function getSolucoes () {
   const solucoes = localStorage.getItem('solucoes')
@@ -121,6 +128,14 @@ export async function getSolucoes () {
     return []
   }
 }
+
+function setSolucoes (solucoes) {
+  localStorage.setItem('solucoes', JSON.stringify(solucoes))
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+
 
 function sortFunction (solucao1, solucao2) {
   return solucao2.p - solucao1.p

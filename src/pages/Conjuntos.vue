@@ -174,11 +174,16 @@ export default {
     }
   },
   mounted () {
-    this.tabelas = Conjunto.getConjuntos()
-    this.tabelasParsed = Conjunto.getConjuntosParsed()
-    if (this.tabelas) { 
-      this.setTabelaAtual(0)
-    }
+    Conjunto.getConjuntos()
+    .then(conjuntos => {
+      this.tabelas = conjuntos
+
+      Conjunto.parseConjuntos(conjuntos)
+      .then(parsed => {
+        this.tabelasParsed = parsed
+        this.setTabelaAtual(0)
+      })
+    })
   }
 }
 </script>

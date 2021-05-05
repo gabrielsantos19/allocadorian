@@ -34,9 +34,9 @@ export default {
     gerar () {
       const t0 = performance.now()
       Vetor.cartesiano(this.conjuntos)
-      .then(vetores => Vetor.compilarVetores(vetores, this.conjuntos))
-      .then(compilados => {
-        this.vetores = compilados
+      .then(vetores => Vetor.linkarVetores(vetores, this.conjuntos))
+      .then(linkados => {
+        this.vetores = linkados
         this.vetoresTime = performance.now() - t0
       })
     },
@@ -53,8 +53,7 @@ export default {
       this.conjuntos = parsed
 
       Vetor.getVetores()
-      .then(vetores => Vetor.compilarVetores(vetores, parsed))
-      .then(compilados => Vetor.linkarVetores(compilados, parsed))
+      .then(vetores => Vetor.linkarVetores(vetores, parsed))
       .then(linkados => this.vetores = linkados)
     })
   }
