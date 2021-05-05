@@ -3,7 +3,7 @@ import * as Vetor from 'src/lib/vetor.js'
 function filtrarSolucao(solucao, vetores, conjuntos) {
   for (let i=0; i<solucao.i.length; ++i) {
     const vetor = vetores[solucao.i[i]]
-    if (Vetor.filtrarSolucao(vetor, conjuntos, solucao) === false) {
+    if (!Vetor.filtrarSolucao(vetor, conjuntos, solucao)) {
       return false
     }
   }
@@ -22,7 +22,7 @@ function pontuarSolucao(solucao, vetores, conjuntos) {
 function filtrarFinal(solucao, vetores, conjuntos) {
   for (let i=0; i<solucao.i.length; ++i) {
     const vetor = vetores[solucao.i[i]]
-    if (Vetor.filtrarFinal(vetor, conjuntos, solucao) === false) {
+    if (!Vetor.filtrarFinal(vetor, conjuntos, solucao)) {
       return false
     }
   }
@@ -32,6 +32,22 @@ function filtrarFinal(solucao, vetores, conjuntos) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+
+function linkar (solucao, vetores) {
+  const svetores = []
+  for (let i=0; i<solucao.i.length; ++i) {
+    svetores.push(vetores[solucao.i[i]])
+  }
+  return svetores
+}
+
+export async function linkarSolucoes (solucoes, vetores) {
+  for (let i=0; i<solucoes.length; ++i) {
+    const solucao = solucoes[i]
+    solucao.vetores = linkar(solucao, vetores)
+  }
+  return solucoes
+}
 
 function solucaoXsolucao (solucao1, solucao2) {
   return {
@@ -92,6 +108,7 @@ export async function solucao (vetores, conjuntos) {
     localStorage.setItem('solucoes', JSON.stringify(solucoes))
     return solucoes
   } else {
+    localStorage.setItem('solucoes', JSON.stringify([]))
     return []
   }
 }

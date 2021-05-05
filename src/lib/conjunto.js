@@ -19,7 +19,7 @@ function parseConjunto (obj) {
   }
 }
 
-export async function getConjuntosParsed () {
+export function getConjuntosParsed () {
   const conjuntos = getConjuntos()
   let conjuntosParsed = []
   if (conjuntos) {

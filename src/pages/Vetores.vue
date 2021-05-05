@@ -4,21 +4,25 @@
     <button @click="compilar()">Compilar</button>
     {{vetores ? vetores.length : 0}} vetores
     {{vetoresTime ? `gerados em ${vetoresTime} milisegundos` : 'carregados'}}
-    <div v-if="vetores">
+    <div v-if="vetores" class="row">
       <div v-for="(vetor, index) in vetores" :key="index">
-        {{index}}: {{JSON.stringify(vetor)}}
+        <vetor-component :vetor="vetor" />
       </div>
     </div>
   </q-page>
 </template>
 
 <script>
+import VetorComponent from 'src/components/Vetor.vue'
 import * as Conjunto from 'src/lib/conjunto.js'
 import * as Vetor from 'src/lib/vetor.js'
 import { parse } from 'src/lib/JSP'
 
 export default {
   name: 'Vetores',
+  components: {
+    VetorComponent
+  },
   data () {
     return {
       conjuntos: null,
@@ -50,7 +54,8 @@ export default {
 
       Vetor.getVetores()
       .then(vetores => Vetor.compilarVetores(vetores, parsed))
-      .then(compilados => this.vetores = compilados)
+      .then(compilados => Vetor.linkarVetores(compilados, parsed))
+      .then(linkados => this.vetores = linkados)
     })
   }
 }

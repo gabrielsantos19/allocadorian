@@ -1,19 +1,22 @@
+import * as Objeto from 'src/lib/objeto.js'
+
 function filtrarVetor (vetor, conjuntos) {
-  const merged = vetor.merged
+  const compilado = vetor.compilado
   for (let i=0; i<vetor.i.length; ++i) {
     const objeto = conjuntos[i][vetor.i[i]]
-    if (objeto.filtrarVetor && objeto.filtrarVetor(merged) === false) {
+    if (!Objeto.filtrarVetor(objeto, compilado)) {
       return false
     }
   }
   return true
 }
 
-function pontuarVetor (conjuntos, vetor) {
+function pontuarVetor (vetor, conjuntos) {
+  const compilado = vetor.compilado
   let pontos = 0
   for (let i=0; i<vetor.i.length; ++i) {
     const objeto = conjuntos[i][vetor.i[i]]
-    pontos += objeto.pontuarVetor(vetor.merged)
+    pontos += Objeto.pontuarVetor(objeto, compilado)
   }
   return pontos
 }
@@ -21,10 +24,7 @@ function pontuarVetor (conjuntos, vetor) {
 export function filtrarSolucao (vetor, conjuntos, solucao) {
   for (let i=0; i<vetor.i.length; ++i) {
     const objeto = conjuntos[i][vetor.i[i]]
-    if (objeto.filtrarSolucao && objeto.filtrarSolucao(solucao) === false) {
-      return false
-    }
-    if (objeto.baseFiltrarSolucao && objeto.baseFiltrarSolucao(solucao) === false) {
+    if (!Objeto.filtrarSolucao(objeto, solucao)) {
       return false
     }
   }
@@ -35,20 +35,16 @@ export function pontuarSolucao (vetor, conjuntos, solucao) {
   let pontos = 0
   for (let i=0; i<vetor.i.length; ++i) {
     const objeto = conjuntos[i][vetor.i[i]]
-    if (objeto.pontuarSolucao) {
-      pontos += objeto.pontuarSolucao(solucao)
-    }
+    pontos += Objeto.pontuarSolucao(objeto, solucao)
   }
+  pontos += vetor.p
   return pontos
 }
 
 export function filtrarFinal (vetor, conjuntos, solucao) {
   for (let i=0; i<vetor.i.length; ++i) {
     const objeto = conjuntos[i][vetor.i[i]]
-    if (objeto.filtrarFinal && objeto.filtrarFinal(solucao) === false) {
-      return false
-    }
-    if (objeto.baseFiltrarFinal && objeto.baseFiltrarFinal(solucao) === false) {
+    if (!Objeto.filtrarFinal(objeto, solucao)) {
       return false
     }
   }
@@ -58,6 +54,22 @@ export function filtrarFinal (vetor, conjuntos, solucao) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+
+function linkar (vetor, conjuntos) {
+  const objetos = []
+  for (let i=0; i<vetor.i.length; ++i) {
+    objetos.push(conjuntos[i][vetor.i[i]])
+  }
+  return objetos
+}
+
+export async function linkarVetores (vetores, conjuntos) {
+  for (let i=0; i<vetores.length; ++i) {
+    const vetor = vetores[i]
+    vetor.objetos = linkar(vetor, conjuntos)
+  }
+  return vetores
+}
 
 function compilar (vetor, conjuntos) {
   const merged = {}
@@ -69,7 +81,8 @@ function compilar (vetor, conjuntos) {
 
 export async function compilarVetores (vetores, conjuntos) {
   for (let i=0; i<vetores.length; ++i) {
-    vetores[i].merged = compilar(vetores[i], conjuntos)
+    const vetor = vetores[i]
+    vetor.compilado = compilar(vetor, conjuntos)
   }
   return vetores
 }
@@ -78,7 +91,7 @@ function vetorXconjunto (conjuntos, vetor, conjunto) {
   let produto = []
   conjunto.forEach((e, index) => {
     const novo = { i: vetor.i.concat(index) }
-    novo.merged = compilar(novo, conjuntos)
+    novo.compilado = compilar(novo, conjuntos)
 
     if (filtrarVetor(novo, conjuntos)) {
       produto.push(novo)
@@ -99,8 +112,7 @@ export async function cartesiano (conjuntos) {
   let vetores = []
   if (conjuntos.length) {
     vetores = [{
-      i: [],
-      merged: {}
+      i: []
     }]
     conjuntos.forEach((conjunto) => {
       vetores = vetoresXconjunto(conjuntos, vetores, conjunto)
@@ -108,7 +120,7 @@ export async function cartesiano (conjuntos) {
   }
 
   vetores.forEach(vetor => {
-    vetor.p = pontuarVetor(conjuntos, vetor)
+    vetor.p = pontuarVetor(vetor, conjuntos)
   })
 
   setVetores(vetores)
