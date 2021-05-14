@@ -2,6 +2,7 @@
   <q-page class="col">
     <div>
       <button @click="gerarSolucoes()">Gerar Soluções</button>
+      <button @click="gerarArvore()">Gerar Árvore</button>
       {{compilados ? compilados.length : '0'}} conjuntos carregados
       {{vetores ? vetores.length : '0'}} vetores carregados
       {{solucoes ? solucoes.length : '0'}} solucoes
@@ -33,7 +34,7 @@ export default {
       compilados: null,
       vetores: null,
       solucoes: null,
-      tSolucoes: null
+      tSolucoes: null,
     }
   },
   computed: {
@@ -42,16 +43,22 @@ export default {
         return this.solucoes.slice(0, 25)
       }
       return []
-    }
+    },
+    totalDeSolucoes () {
+      return this.arvore.reduce((acumulador, valor) => acumulador + valor.length, 0)
+    },
   },
   methods: {
+    gerarArvore () {
+      Solucao.gerarArvore(this.vetores, this.compilados)
+    },
     gerarSolucoes () {
       if (this.compilados && this.vetores) {
         const t0 = performance.now()
 
         this.solucoes = null
         Solucao.solucao(this.vetores, this.compilados)
-        .then(solucoes => Solucao.linkarSolucoes(solucoes, this.vetores))
+        //.then(solucoes => Solucao.linkarSolucoes(solucoes, this.vetores))
         .then(linkados => {
           this.solucoes = linkados
           this.tSolucoes = performance.now() - t0
@@ -60,15 +67,15 @@ export default {
     },
     carregarVetores () {
       Vetor.getVetores()
-      .then(vetores => Vetor.linkarVetores(vetores, this.compilados))
-      .then(linkados => {
-        this.vetores = linkados
+      .then(linkados => Vetor.compilarVetores(linkados, this.compilados))
+      .then(vetoresCompilados => {
+        this.vetores = vetoresCompilados
         this.carregarSolucoes()
       })
     },
     carregarSolucoes () {
       Solucao.getSolucoes()
-      .then(solucoes => Solucao.linkarSolucoes(solucoes, this.vetores))
+      //.then(solucoes => Solucao.linkarSolucoes(solucoes, this.vetores))
       .then(linkados => this.solucoes = linkados)
     }
   },

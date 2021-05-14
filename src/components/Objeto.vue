@@ -1,26 +1,19 @@
 <template>
   <div class="container" @click="$emit('click')">
-    <div class="titulo">{{titulo}}</div>
-    <div class="descricao">{{descricao}}</div>
+    <div class="titulo">{{Object.values(objeto)[0]}}</div>
+    <div class="descricao">{{Object.values(objeto)[1]}}</div>
     <button @click="$emit('remover')">Remover</button>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Item',
+  name: 'ObjetoComponent',
   props: {
-    titulo: {
-      type: String,
+    objeto: {
+      type: Object,
       required: true
-    },
-    descricao: {
-      type: String,
-      default: ''
     }
-  },
-  data () {
-    return {}
   }
 }
 </script>

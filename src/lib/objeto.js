@@ -49,3 +49,14 @@ export function filtrarFinal (objeto, solucao) {
   }
   return true
 }
+
+export function obrigatoriedade (objeto) {
+  let n = 0
+  if (objeto.obrigatoriedade) {
+    n += objeto.obrigatoriedade()
+  }
+  if (objeto.baseObrigatoriedade) {
+    n += objeto.baseObrigatoriedade()
+  }
+  return n
+}

@@ -21,8 +21,8 @@ export default {
 
 <style scoped>
 .container {
-  width: 250px;
-  height: 200px;
+  width: 500px;
+  height: 400px;
   background-color: rgb(255, 70, 70);
   padding: 5px 15px;
   margin: 0px 10px 5px 10px;

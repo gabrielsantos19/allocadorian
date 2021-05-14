@@ -22,9 +22,10 @@ export default {
 <style scoped>
 .container {
   width: 250px;
-  height: 110px;
+  height: 200px;
   background-color: rgb(255, 70, 70);
   padding: 5px 15px;
   margin: 0px 10px 5px 10px;
+  overflow: auto;
 }
 </style>

@@ -40,8 +40,7 @@ function compilarConjunto (conjunto) {
   return conjunto.objetos.map(o => objetoBase + o.slice(1))
 }
 
-export async function compilarConjuntos () {
-  const conjuntos = getConjuntos()
+export async function compilarConjuntos (conjuntos) {
   let compilados = null
 
   let p = new Parallel(conjuntos)

@@ -38,10 +38,9 @@
         </div>
       </div>
       <div v-if="tabelaParsed" class="row">
-        <Item v-for="(linha, index) in tabelaParsed.objetos" 
+        <objeto-component v-for="(linha, index) in tabelaParsed.objetos" 
           :key="index"
-          :titulo="Object.values(linha)[0]"
-          :descricao="Object.values(linha)[0]"
+          :objeto="linha"
           @click="editarObjeto(index)"
           @remover="removerObjeto(index)"
         />
@@ -61,14 +60,14 @@
 </template>
 
 <script>
-import Item from 'src/components/Item.vue'
+import ObjetoComponent from 'src/components/Objeto.vue'
 import * as JSP from 'src/lib/JSP.js'
 import * as Template from 'src/lib/template.js'
 import * as Conjunto from 'src/lib/conjunto.js'
 
 export default {
   components: { 
-    Item
+    ObjetoComponent
   },
   name: 'Conjuntos',
   data () {

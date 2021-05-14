@@ -2,10 +2,12 @@
   <q-page class="col">
     <button @click="gerar()">Gerar</button>
     <button @click="compilar()">Compilar</button>
+    <button @click="gerarObrigatoriedades()">Obri</button>
     {{vetores ? vetores.length : 0}} vetores
     {{vetoresTime ? `gerados em ${vetoresTime} milisegundos` : 'carregados'}}
+    {{conjuntos ? `${conjuntos.length} conjuntos carregados` : ''}}
     <div v-if="vetores" class="row">
-      <div v-for="(vetor, index) in vetores" :key="index">
+      <div v-for="(vetor, index) in sliced" :key="index">
         <vetor-component :vetor="vetor" />
       </div>
     </div>
@@ -16,7 +18,6 @@
 import VetorComponent from 'src/components/Vetor.vue'
 import * as Conjunto from 'src/lib/conjunto.js'
 import * as Vetor from 'src/lib/vetor.js'
-import { parse } from 'src/lib/JSP'
 
 export default {
   name: 'Vetores',
@@ -30,7 +31,19 @@ export default {
       vetoresTime: null,
     }
   },
+  computed: {
+    sliced () {
+      if (this.vetores)
+        return this.vetores.slice(0, 30)
+      else
+        return []
+    }
+  },
   methods: {
+    gerarObrigatoriedades () {
+      Vetor.gerarObrigatoriedades(this.vetores, this.conjuntos)
+      .then(o => console.log(o))
+    },
     gerar () {
       const t0 = performance.now()
       Vetor.cartesiano(this.conjuntos)
@@ -41,7 +54,8 @@ export default {
       })
     },
     compilar () {
-      Conjunto.compilarConjuntos()
+      Conjunto.getConjuntos()
+      .then(conjuntos => Conjunto.compilarConjuntos(conjuntos))
       .then(val => Conjunto.parseCompilados(val))
       .then(parsed => this.conjuntos = parsed)
     }

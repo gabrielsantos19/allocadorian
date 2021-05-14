@@ -1,6 +1,8 @@
 <template>
   <div>
-    {{JSON.stringify(solucao)}}  
+    <grafico-component v-if="solucao"
+      :agrupamento="[0,1,2]"
+      :vetores="solucao.vetores" />
   </div>
 </template>
 
@@ -8,9 +10,13 @@
 import * as Conjunto from 'src/lib/conjunto.js'
 import * as Vetor from 'src/lib/vetor.js'
 import * as Solucao from 'src/lib/solucao.js'
+import GraficoComponent from 'src/components/Grafico.vue'
 
 export default {
   name: 'Solucao',
+  components: {
+    GraficoComponent
+  },
   data () {
     return {
       solucao: null,
@@ -37,6 +43,7 @@ export default {
         this.solucoes = linkados
         if (this.solucaoId) {
           this.solucao = this.solucoes[this.solucaoId]
+          this.solucao.vetores.reverse()
         }
       })
     }
@@ -57,3 +64,6 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+</style>
