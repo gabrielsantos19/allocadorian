@@ -10,7 +10,7 @@ function filtrarSolucao(solucao, vetores, conjuntos) {
   return true
 }
 
-function pontuarSolucao(solucao, vetores, conjuntos) {
+export async function pontuarSolucao(solucao, vetores, conjuntos) {
   let pontos = 0
   for (let i=0; i<solucao.i.length; ++i) {
     const vetor = vetores[solucao.i[i]]
@@ -49,7 +49,7 @@ export async function linkarSolucoes (solucoes, vetores) {
   return solucoes
 }
 
-function compilarSolucao (solucao, vetores) {
+export async function compilarSolucao (solucao, vetores) {
   const compilada = []
   for (let i=0; i<solucao.i.length; ++i) {
     compilada.push(vetores[solucao.i[i]].compilado)
@@ -69,8 +69,8 @@ function compilarSolucoes (solucoes, vetores) {
 ///////////////////////////////////////////////////////////////////////////////
 
 
-function filtrarNova (nova, vetores, conjuntos) {
-  nova.compilada = compilarSolucao(nova, vetores)
+async function filtrarNova (nova, vetores, conjuntos) {
+  nova.compilada = await compilarSolucao(nova, vetores)
   if (filtrarSolucao(nova, vetores, conjuntos)) {
     return true
   }
@@ -125,7 +125,7 @@ export async function gerarArvore (vetores, conjuntos) {
     for (let a=i+1; a<vetores.length; ++a) {
       const nova = {i: [i, a]}
       
-      if (filtrarNova(nova, vetores, conjuntos) && 
+      if (await filtrarNova(nova, vetores, conjuntos) && 
           filtrarObrigatoriedade(nova, obrigatoriedades)) {
         lista.push(a)
       }
@@ -182,7 +182,7 @@ export async function solucao (vetores, conjuntos) {
     contador += 1
     const nova = {i: pilha.slice()}
 
-    if (filtrarNova(nova, vetores, conjuntos) 
+    if (await filtrarNova(nova, vetores, conjuntos) 
     && filtrarObrigatoriedade(nova, obrigatoriedades)) {
       
       if (filtrarFinal(nova, vetores, conjuntos)

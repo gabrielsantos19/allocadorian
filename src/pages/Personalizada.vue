@@ -1,13 +1,25 @@
 <template>
   <div class="container">
-    {{personalizadaI}}
-    <div>
-      <grafico-component v-if="personalizada"
+    <div class="info">
+      <div>
+        {{personalizadaP}} pontos
+      </div>
+      <div>
+        {{personalizadaI ? personalizadaI.length : 0}} vetores
+      </div>
+    </div>
+
+    <div style="margin-top: 50px;">
+      <grafico-component v-if="personalizadaVetores"
       :agrupamento="[0,1,2]"
-      :vetores="personalizada.vetores" />
+      :vetores="personalizadaVetores" />
     </div>
 
     <div class="column">
+      <div>
+        <input />
+      </div>
+
       <div v-for="(vetor, index) in vetores" :key="index" class="flex no-wrap">
         <input type="checkbox" :value="index" v-model="personalizadaI"/>
         <vetor-component :vetor="vetor" />
@@ -34,22 +46,31 @@ export default {
       conjuntos: null,
       vetores: null,
       personalizadaI: [],
-      personalizada: null
+      personalizadaVetores: [],
+      personalizadaP: null
     }
   },
   watch: {
     personalizadaI () {
-      const pers = {i: this.personalizadaI}
-      Solucao.linkar(pers, this.vetores)
-      .then(link => {
-        pers.vetores = link
-        this.personalizada = pers
+      async function construir (i, vetores, conjuntos) {
+        const pers = {i: i}
+        pers.compilada = await Solucao.compilarSolucao(pers, vetores)
+        pers.p = await Solucao.pontuarSolucao(pers, vetores, conjuntos)
+        pers.vetores = await Solucao.linkar(pers, vetores)
+
+        return pers
+      }
+      construir(this.personalizadaI, this.vetores, this.conjuntos)
+      .then(s => {
+        this.personalizadaP = s.p
+        this.personalizadaVetores = s.vetores
       })
-    }
+    },
   },
   methods: {
     carregarVetores () {
       Vetor.getVetores()
+      .then(vetores => Vetor.compilarVetores(vetores, this.conjuntos))
       .then(vetores => Vetor.linkarVetores(vetores, this.conjuntos))
       .then(linkados => {
         this.vetores = linkados
@@ -60,6 +81,7 @@ export default {
       const raw = localStorage.getItem('personalizada')
       const pers = JSON.parse(raw)
       this.personalizadaI = pers.i
+      this.personalizadaP = pers.p
     }
   },
   mounted () {
@@ -77,5 +99,16 @@ export default {
 .container {
   display: flex;
   flex-direction: row;
+}
+.info {
+  top: 30px;
+  position: fixed;
+}
+.info div {
+  margin: 5px;
+  padding: 5px;
+  border-radius: 7px;
+  color: white;
+  background-color: grey;
 }
 </style>
