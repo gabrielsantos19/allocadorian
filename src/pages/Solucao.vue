@@ -1,7 +1,7 @@
 <template>
   <div>
     <grafico-component v-if="solucao"
-      :agrupamento="[0,1,2]"
+      :agrupamento="[2,1,0]"
       :vetores="solucao.vetores" />
   </div>
 </template>
@@ -43,7 +43,6 @@ export default {
         this.solucoes = linkados
         if (this.solucaoId) {
           this.solucao = this.solucoes[this.solucaoId]
-          this.solucao.vetores.reverse()
         }
       })
     }

@@ -58,7 +58,6 @@ export default {
 
         this.solucoes = null
         Solucao.solucao(this.vetores, this.compilados)
-        //.then(solucoes => Solucao.linkarSolucoes(solucoes, this.vetores))
         .then(linkados => {
           this.solucoes = linkados
           this.tSolucoes = performance.now() - t0
@@ -75,7 +74,6 @@ export default {
     },
     carregarSolucoes () {
       Solucao.getSolucoes()
-      //.then(solucoes => Solucao.linkarSolucoes(solucoes, this.vetores))
       .then(linkados => this.solucoes = linkados)
     }
   },

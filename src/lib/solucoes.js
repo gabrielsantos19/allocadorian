@@ -1,11 +1,17 @@
-import 'src/lib/solucao.js'
-
 export async function linkarSolucoes (solucoes, vetores) {
   for (let i=0; i<solucoes.length; ++i) {
     const solucao = solucoes[i]
     solucao.vetores = linkar(solucao, vetores)
   }
   return solucoes
+}
+
+function compilarSolucao (solucao, vetores) {
+  const compilada = []
+  for (let i=0; i<solucao.i.length; ++i) {
+    compilada.push(vetores[solucao.i[i]].compilado)
+  }
+  return compilada
 }
 
 function compilarSolucoes (solucoes, vetores) {
@@ -15,6 +21,10 @@ function compilarSolucoes (solucoes, vetores) {
   }
   return solucoes
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+
 
 function filtrarNova (nova, vetores, conjuntos) {
   nova.compilada = compilarSolucao(nova, vetores)
@@ -125,7 +135,7 @@ export async function solucao (vetores, conjuntos) {
   const pilha = [0]
   let contador = 0
 
-  while (pilha.length > 0 && solucoes.length < 3) {
+  while (pilha.length > 0 && solucoes.length < 10) {
     contador += 1
     const nova = {i: pilha.slice()}
 
@@ -151,8 +161,18 @@ export async function solucao (vetores, conjuntos) {
     }
   }
 
+  for (let i=0; i<solucoes.length; ++i) {
+    const solucao = solucoes[i]
+    solucao.p = pontuarSolucao(solucao, vetores, conjuntos)
+  }
+
+  setSolucoes(solucoes)
   return solucoes
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+
 
 export async function getSolucoes () {
   const solucoes = localStorage.getItem('solucoes')
@@ -164,8 +184,20 @@ export async function getSolucoes () {
 }
 
 function setSolucoes (solucoes) {
-  localStorage.setItem('solucoes', JSON.stringify(solucoes))
+  const solucoesRaw = []
+  for (let i=0; i<solucoes.length; ++i) {
+    solucoesRaw.push({
+      i: solucoes[i].i,
+      p: solucoes[i].p
+    })
+  }
+  
+  localStorage.setItem('solucoes', JSON.stringify(solucoesRaw))
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+
 
 function sortFunction (solucao1, solucao2) {
   return solucao2.p - solucao1.p

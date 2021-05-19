@@ -33,7 +33,7 @@ function filtrarFinal(solucao, vetores, conjuntos) {
 ///////////////////////////////////////////////////////////////////////////////
 
 
-function linkar (solucao, vetores) {
+export async function linkar (solucao, vetores) {
   const svetores = []
   for (let i=0; i<solucao.i.length; ++i) {
     svetores.push(vetores[solucao.i[i]])
@@ -44,7 +44,7 @@ function linkar (solucao, vetores) {
 export async function linkarSolucoes (solucoes, vetores) {
   for (let i=0; i<solucoes.length; ++i) {
     const solucao = solucoes[i]
-    solucao.vetores = linkar(solucao, vetores)
+    solucao.vetores = await linkar(solucao, vetores)
   }
   return solucoes
 }

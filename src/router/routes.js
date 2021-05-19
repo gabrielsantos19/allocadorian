@@ -28,6 +28,13 @@ const routes = [
       { path: '', component: () => import('src/pages/Solucao.vue') }
     ]
   },
+  {
+    path: '/personalizada',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('src/pages/Personalizada.vue') }
+    ]
+  },
 
   // Always leave this as last one,
   // but you can also remove it

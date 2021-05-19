@@ -5,6 +5,9 @@
         Allocadorian
       </div>
       <div>
+        <router-link to="/personalizada">
+          <button>Personalizada</button>
+        </router-link>
         <router-link to="/">
           <button>Soluções</button>
         </router-link>

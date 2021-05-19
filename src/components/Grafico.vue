@@ -4,9 +4,7 @@
       <div>
         {{titulo(grupo)}}
       </div>
-      <grafico-component 
-        :vetores="grupo" 
-        :agrupamento="agrupamento.slice(1)" />
+      <grafico-component :vetores="grupo" :agrupamento="agrupamento.slice(1)" />
     </div>
   </div>
 </template>
@@ -38,7 +36,7 @@ export default {
     },
     backgroundColor () {
       const i = this.agrupamento.length
-      return `rgb(75,100,${i*60})`
+      return `rgb(50,200,${i*100%255})`
     }
   },
   methods: {
