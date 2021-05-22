@@ -13,16 +13,11 @@ export default {
       default: ''
     }
   },
-  data () {
-    return {
-    }
-  }
 }
 </script>
 
 <style scoped>
 textarea {
-  flex-grow: 1;
   font-family: "Courier New";
 }
 </style>

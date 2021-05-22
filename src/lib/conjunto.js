@@ -25,6 +25,16 @@ export async function parseConjuntos (conjuntos) {
   return conjuntosParsed
 }
 
+export async function getConjuntos () {
+  const conjuntosRaw = localStorage.getItem('conjuntos')
+  if (conjuntosRaw) {
+    return JSON.parse(conjuntosRaw)
+  }
+  else {
+    return []
+  }
+}
+
 function compilarConjunto (conjunto) {
   const objetoBase = conjunto.objetoBase.slice(0, -1)
   return conjunto.objetos.map(o => objetoBase + o.slice(1))
@@ -42,4 +52,14 @@ export async function compilarConjuntos (conjuntos) {
   localStorage.setItem('compilados', JSON.stringify(compilados))
 
   return compilados
+}
+
+export async function getConjuntosCompilados () {
+  const compilados = localStorage.getItem('compilados')
+  if (compilados) {
+    return JSON.parse(compilados)
+  }
+  else {
+    return []
+  }
 }

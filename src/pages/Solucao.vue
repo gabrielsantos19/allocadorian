@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex" style="overflow: auto;">
     <grafico-component v-if="solucao"
       :agrupamento="[2,1,0]"
       :vetores="solucao.vetores" />
@@ -33,39 +33,35 @@ export default {
       solucoes: null
     }
   },
-  methods: {
-    carregarVetores () {
-      VetoresDAO.get()
-      .then(vetores => Vetor.linkarVetores(vetores, this.conjuntos))
-      .then(linkados => {
-        this.vetores = linkados
-        this.carregarSolucoes()
-      })
-    },
-    carregarSolucoes () {
-      SolucoesDAO.get()
-      .then(solucoes => Solucao.linkarSolucoes(solucoes, this.vetores))
-      .then(linkados => {
-        this.solucoes = linkados
-        if (this.solucaoId) {
-          this.solucao = this.solucoes[this.solucaoId]
-        }
-      })
-    }
-  },
   mounted () {
     const id = this.$route.query.id
-
-    if (!isNaN(id)) {
-      this.solucaoId = id
-
-      ConjuntosDAO.get()
-      .then(conjuntos => Conjunto.parseConjuntos(conjuntos))
-      .then(parsed => {
-        this.conjuntos = parsed.map(c => c.objetos)
-        this.carregarVetores()
-      })
+    if (isNaN(id)) {
+      return
     }
+
+    async function carregar () {
+      const conjuntos = await ConjuntosDAO.get()
+      .then(conjuntos => Conjunto.parseConjuntos(conjuntos))
+
+      const vetores = await VetoresDAO.get()
+      .then(vetores => Vetor.linkarVetores(vetores, conjuntos))
+
+      const solucoes = await SolucoesDAO.get()
+      .then(solucoes => Solucao.linkarSolucoes(solucoes, vetores))
+
+      return [conjuntos, vetores, solucoes]
+    }
+    
+    carregar()
+    .then(a => {
+      this.conjuntos = a[0]
+      this.vetores = a[1]
+      this.solucoes = a[2]
+      if (id) {
+        this.solucaoId = id
+        this.solucao = a[2][id]
+      }
+    })
   }
 }
 </script>

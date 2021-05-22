@@ -1,6 +1,6 @@
 <template>
-  <q-page class="fullscreen row no-wrap" style="margin-top: 42px">
-    <div class="column no-wrap col">
+  <main class="row no-wrap col" style="overflow: auto;">
+    <div class="column no-wrap col" style="min-width: 400px;">
       <div class="row">
         <div class="row no-wrap q-my-sm" style="overflow: auto;">
           <div v-for="(tabela, index) in tabelasParsed" 
@@ -38,26 +38,27 @@
         </div>
       </div>
 
-      <div v-if="tabelaParsed" class="row" style="overflow: auto;">
+      <div v-if="tabelaParsed" class="objetos">
         <objeto-component v-for="(linha, index) in tabelaParsed.objetos" 
+          class="objeto"
           :key="index"
           :objeto="linha"
-          @click="editarObjeto(index)"
+          @editar="editarObjeto(index)"
           @remover="removerObjeto(index)" />
       </div>
     </div>
 
-    <div class="column q-px-sm q-pb-sm" style="background-color: rgb(150,150,150)">
+    <div v-if="editorAberto" class="column q-px-sm q-pb-sm" style="background-color: rgb(150,150,150); min-width: 480px;">
       <div class="row">
         <div>{{editorTitulo}}</div>
         <button @click="editorSalvar(editorTexto)">Salvar</button>
         <button @click="cancelarEdicao()" style="align-self: end">Cancelar</button>
       </div>
-      <div v-if="editorAberto" class="column col">
-        <textarea cols="60" v-model="editorTexto" class="col" />
+      <div class="column col">
+        <textarea v-model="editorTexto" class="col" />
       </div>
     </div>
-  </q-page>
+  </main>
 </template>
 
 <script>
@@ -93,7 +94,7 @@ export default {
   methods: {
     criarTabela () {
       this.editorAberto = true
-      this.editorTitulo = 'Nova tabela'
+      this.editorTitulo = 'Novo conjunto'
       this.editorTexto = Template.descricao
       this.editorSalvar = this.inserirTabela
     },
@@ -119,6 +120,7 @@ export default {
       const length = this.tabelas.push(tabela)
       this.salvarTabelas()
       this.setTabelaAtual(length-1)
+      this.cancelarEdicao()
     },
     inserirObjeto (textoObjeto) {
       const objeto = JSP.parse(textoObjeto)
@@ -191,3 +193,15 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.objetos {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  overflow: auto;
+}
+.objeto {
+  margin: 0px 0px 5px 10px;
+}
+</style>

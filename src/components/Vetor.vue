@@ -1,7 +1,13 @@
 <template>
   <div class="container" :title="JSON.stringify(vetor)">
-    {{texto}}<br />
-    Pontos: {{this.vetor.p}}
+    <div class="objetos">
+      <div v-for="(objeto, index) in texto" :key="index">
+        {{objeto}}
+      </div>
+    </div>
+    <div class="pontuacao">
+      {{vetor.p}}
+    </div>
   </div>
 </template>
 
@@ -22,7 +28,7 @@ export default {
         const key = Object.keys(objeto)[0]
         valores.push(objeto[key])
       }
-      return valores.join(' • ')
+      return valores
     }
   }
 }
@@ -30,11 +36,25 @@ export default {
 
 <style scoped>
 .container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  
   width: 250px;
-  background-color: rgb(255, 70, 70);
+  font-size: 15px;
+  color: aliceblue;
+  background: #1f4068;
+  font-weight: bold;
   border-radius: 7px;
   padding: 5px 15px;
-  margin: 0px 10px 5px 10px;
   overflow: hidden;
+}
+.objetos {
+  flex-grow: 1;
+}
+.pontuacao {
+  padding: 5px;
+  font-size: 30px;
 }
 </style>

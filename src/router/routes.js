@@ -1,17 +1,17 @@
 
 const routes = [
   {
-    path: '/',
+    path: '/personalizada',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Index.vue') }
+      { path: '', component: () => import('src/pages/Personalizada.vue') }
     ]
   },
   {
-    path: '/conjuntos',
+    path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('src/pages/Conjuntos.vue') }
+      { path: '', component: () => import('src/pages/Solucoes.vue') }
     ]
   },
   {
@@ -22,22 +22,20 @@ const routes = [
     ]
   },
   {
+    path: '/conjuntos',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('src/pages/Conjuntos.vue') }
+    ]
+  },
+  {
     path: '/solucao',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('src/pages/Solucao.vue') }
     ]
   },
-  {
-    path: '/personalizada',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [
-      { path: '', component: () => import('src/pages/Personalizada.vue') }
-    ]
-  },
 
-  // Always leave this as last one,
-  // but you can also remove it
   {
     path: '*',
     component: () => import('pages/Error404.vue')

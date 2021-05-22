@@ -58,7 +58,7 @@ export function filtrarFinal (vetor, conjuntos, solucao) {
 function linkar (vetor, conjuntos) {
   const objetos = []
   for (let i=0; i<vetor.i.length; ++i) {
-    objetos.push(conjuntos[i][vetor.i[i]])
+    objetos.push(conjuntos[i].objetos[vetor.i[i]])
   }
   return objetos
 }
@@ -127,7 +127,6 @@ export async function cartesiano (conjuntos) {
     vetor.p = pontuarVetor(vetor, conjuntos)
   })
 
-  setVetores(vetores)
   return vetores
 }
 

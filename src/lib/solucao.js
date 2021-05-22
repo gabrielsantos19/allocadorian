@@ -206,10 +206,9 @@ export async function solucao (vetores, conjuntos) {
 
   for (let i=0; i<solucoes.length; ++i) {
     const solucao = solucoes[i]
-    solucao.p = pontuarSolucao(solucao, vetores, conjuntos)
+    solucao.p = await pontuarSolucao(solucao, vetores, conjuntos)
   }
 
-  setSolucoes(solucoes)
   return solucoes
 }
 

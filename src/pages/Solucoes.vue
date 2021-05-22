@@ -1,5 +1,5 @@
 <template>
-  <q-page class="col">
+  <main class="column no-wrap" style="overflow: auto;">
     <div>
       <button @click="gerarSolucoes()">Gerar Soluções</button>
       <button @click="gerarArvore()">Gerar Árvore</button>
@@ -15,7 +15,7 @@
           @click="$router.push('/solucao?id='+index)"/>
       </div>
     </div>
-  </q-page>
+  </main>
 </template>
 
 <script>
@@ -31,7 +31,7 @@ import SolucaoComponent from 'src/components/Solucao.vue'
 
 
 export default {
-  name: 'PageIndex',
+  name: 'SolucoesView',
   components: {
     SolucaoComponent
   },
@@ -50,9 +50,6 @@ export default {
       }
       return []
     },
-    totalDeSolucoes () {
-      return this.arvore.reduce((acumulador, valor) => acumulador + valor.length, 0)
-    },
   },
   methods: {
     gerarArvore () {
@@ -64,31 +61,32 @@ export default {
 
         this.solucoes = null
         Solucao.solucao(this.vetores, this.compilados)
-        .then(linkados => {
-          this.solucoes = linkados
+        .then(sols => {
+          SolucoesDAO.post(sols)
+          this.solucoes = sols
           this.tSolucoes = performance.now() - t0
         })
       }
     },
-    carregarVetores () {
-      VetoresDAO.get()
-      .then(linkados => Vetor.compilarVetores(linkados, this.compilados))
-      .then(vetoresCompilados => {
-        this.vetores = vetoresCompilados
-        this.carregarSolucoes()
-      })
-    },
-    carregarSolucoes () {
-      SolucoesDAO.get()
-      .then(linkados => this.solucoes = linkados)
-    }
   },
   mounted () {
-    CompiladosDAO.get()
-    .then(compilados => Conjunto.parseCompilados(compilados))
-    .then(parsed => {
-      this.compilados = parsed
-      this.carregarVetores()
+    async function carregar () {
+      const parsed = await CompiladosDAO.get()
+      .then(compilados => Conjunto.parseCompilados(compilados))
+
+      const vetores = await VetoresDAO.get()
+      .then(linkados => Vetor.compilarVetores(linkados, parsed))
+
+      const solucoes = await SolucoesDAO.get()
+      
+      return [parsed, vetores, solucoes]
+    }
+    
+    carregar()
+    .then(a => {
+      this.compilados = a[0]
+      this.vetores = a[1]
+      this.solucoes = a[2]
     })
   }
 }

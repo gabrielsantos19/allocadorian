@@ -1,8 +1,9 @@
 <template>
-  <div class="container" @click="$emit('click')">
+  <div class="container">
     <div class="titulo">{{Object.values(objeto)[0]}}</div>
     <div class="descricao">{{Object.values(objeto)[1]}}</div>
     <button @click="$emit('remover')">Remover</button>
+    <button @click="$emit('editar')">Editar</button>
   </div>
 </template>
 
@@ -22,9 +23,10 @@ export default {
 .container {
   width: 250px;
   height: 110px;
-  background-color: rgb(255, 70, 70);
-  padding: 5px 15px;
-  margin: 0px 10px 5px 10px;
+  background-color: #e84545;
+  border-radius: 7px;
+  padding: 10px 15px;
+  overflow: hidden;
 }
 .titulo {
   font-size: 24pt;

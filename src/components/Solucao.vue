@@ -1,6 +1,7 @@
 <template>
-  <div class="container" @click="$emit('click')">
-    {{solucao}}
+  <div class="container" @click="$emit('click')" :title="JSON.stringify(solucao)">
+    {{solucao.i.length}} vetores<br />
+    Pontos: {{solucao.p}}
   </div>
 </template>
 
@@ -13,16 +14,13 @@ export default {
       required: true
     }
   },
-  data () {
-    return {}
-  }
 }
 </script>
 
 <style scoped>
 .container {
-  width: 500px;
-  height: 400px;
+  width: 250px;
+  border-radius: 7px;
   background-color: rgb(255, 70, 70);
   padding: 5px 15px;
   margin: 0px 10px 5px 10px;

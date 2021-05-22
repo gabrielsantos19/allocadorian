@@ -1,21 +1,24 @@
 <template>
-  <q-page class="col">
-    <button @click="gerar()">Gerar</button>
-    <button @click="compilar()">Compilar</button>
-    <button @click="gerarObrigatoriedades()">Obri</button>
-    {{vetores ? vetores.length : 0}} vetores
-    {{vetoresTime ? `gerados em ${vetoresTime} milisegundos` : 'carregados'}}
-    {{conjuntos ? `${conjuntos.length} conjuntos carregados` : ''}}
+  <main class="column no-wrap" style="overflow: auto; background-color: #162447;">
+    <div>
+      <button @click="gerar()">Gerar vetores</button>
+      <button @click="gerarObrigatoriedades()">Obrigatoriedades</button>
+      <button @click="compilar()">Compilar conjuntos</button>
+      {{vetores ? vetores.length : 0}} vetores
+      {{vetoresTime ? `gerados em ${vetoresTime} milisegundos` : 'carregados'}}
+      {{conjuntos ? `${conjuntos.length} conjuntos carregados` : ''}}
+    </div>
     <div v-if="vetores" class="row">
       <div v-for="(vetor, index) in sliced" :key="index">
-        <vetor-component :vetor="vetor" />
+        <vetor-component :vetor="vetor" class="vetor" />
       </div>
     </div>
-  </q-page>
+  </main>
 </template>
 
 <script>
 import * as ConjuntosDAO from 'src/lib/DAO/conjuntosDAO.js'
+import * as CompiladosDAO from 'src/lib/DAO/compiladosDAO.js'
 import * as VetoresDAO from 'src/lib/DAO/vetoresDAO.js'
 
 import * as Conjunto from 'src/lib/conjunto.js'
@@ -32,6 +35,7 @@ export default {
   data () {
     return {
       conjuntos: null,
+      compilados: null,
       vetores: null,
       vetoresTime: null,
     }
@@ -39,19 +43,19 @@ export default {
   computed: {
     sliced () {
       if (this.vetores)
-        return this.vetores.slice(0, 30)
+        return this.vetores.slice(0, 100)
       else
         return []
     }
   },
   methods: {
     gerarObrigatoriedades () {
-      Vetor.gerarObrigatoriedades(this.vetores, this.conjuntos)
+      Vetor.gerarObrigatoriedades(this.vetores, this.compilados)
       .then(o => console.log(o))
     },
     gerar () {
       const t0 = performance.now()
-      Vetor.cartesiano(this.conjuntos)
+      Vetor.cartesiano(this.compilados)
       .then(vetores => Vetor.linkarVetores(vetores, this.conjuntos))
       .then(linkados => {
         this.vetores = linkados
@@ -61,20 +65,35 @@ export default {
     compilar () {
       ConjuntosDAO.get()
       .then(conjuntos => Conjunto.compilarConjuntos(conjuntos))
-      .then(val => Conjunto.parseCompilados(val))
-      .then(parsed => this.conjuntos = parsed)
+      .then(compilados => {
+        CompiladosDAO.post(compilados)
+
+        Conjunto.parseCompilados(compilados)
+        .then(parsed => this.compilados = parsed)
+      })
     }
   },
   mounted () {
-    ConjuntosDAO.get()
-    .then(conjuntos => Conjunto.parseConjuntos(conjuntos))
-    .then(parsed => {
-      this.conjuntos = parsed.map(c => c.objetos)
+    async function carregar () {
+      const conjuntos = await ConjuntosDAO.get()
+      .then(conjuntos => Conjunto.parseConjuntos(conjuntos))
 
-      VetoresDAO.get()
-      .then(vetores => Vetor.linkarVetores(vetores, this.conjuntos))
-      .then(linkados => this.vetores = linkados)
+      const vetores = await VetoresDAO.get()
+      .then(vetores => Vetor.linkarVetores(vetores, conjuntos))
+
+      return [conjuntos, vetores]
+    }
+
+    carregar().then(a => {
+      this.conjuntos = a[0]
+      this.vetores = a[1]
     })
   }
 }
 </script>
+
+<style scoped>
+.vetor {
+  margin: 0px 10px 5px 10px;
+}
+</style>
