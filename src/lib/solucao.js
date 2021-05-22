@@ -217,31 +217,6 @@ export async function solucao (vetores, conjuntos) {
 ///////////////////////////////////////////////////////////////////////////////
 
 
-export async function getSolucoes () {
-  const solucoes = localStorage.getItem('solucoes')
-  if (solucoes) {
-    return JSON.parse(solucoes)
-  } else {
-    return []
-  }
-}
-
-function setSolucoes (solucoes) {
-  const solucoesRaw = []
-  for (let i=0; i<solucoes.length; ++i) {
-    solucoesRaw.push({
-      i: solucoes[i].i,
-      p: solucoes[i].p
-    })
-  }
-  
-  localStorage.setItem('solucoes', JSON.stringify(solucoesRaw))
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-
-
 function sortFunction (solucao1, solucao2) {
   return solucao2.p - solucao1.p
 }

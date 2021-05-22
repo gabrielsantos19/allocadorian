@@ -19,10 +19,16 @@
 </template>
 
 <script>
-import SolucaoComponent from 'src/components/Solucao.vue'
+import * as CompiladosDAO from 'src/lib/DAO/compiladosDAO.js'
+import * as VetoresDAO from 'src/lib/DAO/vetoresDAO.js'
+import * as SolucoesDAO from 'src/lib/DAO/solucoesDAO.js'
+
 import * as Conjunto from 'src/lib/conjunto.js'
 import * as Vetor from 'src/lib/vetor.js'
 import * as Solucao from 'src/lib/solucao.js'
+
+import SolucaoComponent from 'src/components/Solucao.vue'
+
 
 export default {
   name: 'PageIndex',
@@ -65,7 +71,7 @@ export default {
       }
     },
     carregarVetores () {
-      Vetor.getVetores()
+      VetoresDAO.get()
       .then(linkados => Vetor.compilarVetores(linkados, this.compilados))
       .then(vetoresCompilados => {
         this.vetores = vetoresCompilados
@@ -73,12 +79,12 @@ export default {
       })
     },
     carregarSolucoes () {
-      Solucao.getSolucoes()
+      SolucoesDAO.get()
       .then(linkados => this.solucoes = linkados)
     }
   },
   mounted () {
-    Conjunto.getConjuntosCompilados()
+    CompiladosDAO.get()
     .then(compilados => Conjunto.parseCompilados(compilados))
     .then(parsed => {
       this.compilados = parsed

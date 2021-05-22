@@ -7,10 +7,16 @@
 </template>
 
 <script>
+import * as ConjuntosDAO from 'src/lib/DAO/conjuntosDAO.js'
+import * as VetoresDAO from 'src/lib/DAO/vetoresDAO.js'
+import * as SolucoesDAO from 'src/lib/DAO/solucoesDAO.js'
+
 import * as Conjunto from 'src/lib/conjunto.js'
 import * as Vetor from 'src/lib/vetor.js'
 import * as Solucao from 'src/lib/solucao.js'
+
 import GraficoComponent from 'src/components/Grafico.vue'
+
 
 export default {
   name: 'Solucao',
@@ -29,7 +35,7 @@ export default {
   },
   methods: {
     carregarVetores () {
-      Vetor.getVetores()
+      VetoresDAO.get()
       .then(vetores => Vetor.linkarVetores(vetores, this.conjuntos))
       .then(linkados => {
         this.vetores = linkados
@@ -37,7 +43,7 @@ export default {
       })
     },
     carregarSolucoes () {
-      Solucao.getSolucoes()
+      SolucoesDAO.get()
       .then(solucoes => Solucao.linkarSolucoes(solucoes, this.vetores))
       .then(linkados => {
         this.solucoes = linkados
@@ -53,7 +59,7 @@ export default {
     if (!isNaN(id)) {
       this.solucaoId = id
 
-      Conjunto.getConjuntos()
+      ConjuntosDAO.get()
       .then(conjuntos => Conjunto.parseConjuntos(conjuntos))
       .then(parsed => {
         this.conjuntos = parsed.map(c => c.objetos)

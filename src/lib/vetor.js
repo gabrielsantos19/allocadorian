@@ -131,20 +131,7 @@ export async function cartesiano (conjuntos) {
   return vetores
 }
 
-export async function getVetores () {
-  const vetores = JSON.parse(localStorage.getItem('vetores'))
-  return vetores
-}
 
-function setVetores (vetores) {
-  const vetoresRaw = vetores.map(vetor => { 
-    return {
-      i:vetor.i,
-      p: vetor.p
-    }
-  })
-  localStorage.setItem('vetores', JSON.stringify(vetoresRaw))
-}
 
 
 

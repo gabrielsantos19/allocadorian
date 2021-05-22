@@ -15,9 +15,14 @@
 </template>
 
 <script>
-import VetorComponent from 'src/components/Vetor.vue'
+import * as ConjuntosDAO from 'src/lib/DAO/conjuntosDAO.js'
+import * as VetoresDAO from 'src/lib/DAO/vetoresDAO.js'
+
 import * as Conjunto from 'src/lib/conjunto.js'
 import * as Vetor from 'src/lib/vetor.js'
+
+import VetorComponent from 'src/components/Vetor.vue'
+
 
 export default {
   name: 'Vetores',
@@ -54,20 +59,20 @@ export default {
       })
     },
     compilar () {
-      Conjunto.getConjuntos()
+      ConjuntosDAO.get()
       .then(conjuntos => Conjunto.compilarConjuntos(conjuntos))
       .then(val => Conjunto.parseCompilados(val))
       .then(parsed => this.conjuntos = parsed)
     }
   },
   mounted () {
-    Conjunto.getConjuntosCompilados()
-    .then(compilados => Conjunto.parseCompilados(compilados))
+    ConjuntosDAO.get()
+    .then(conjuntos => Conjunto.parseConjuntos(conjuntos))
     .then(parsed => {
-      this.conjuntos = parsed
+      this.conjuntos = parsed.map(c => c.objetos)
 
-      Vetor.getVetores()
-      .then(vetores => Vetor.linkarVetores(vetores, parsed))
+      VetoresDAO.get()
+      .then(vetores => Vetor.linkarVetores(vetores, this.conjuntos))
       .then(linkados => this.vetores = linkados)
     })
   }

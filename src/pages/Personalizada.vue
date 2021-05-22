@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="fullscreen container" style="margin-top: 42px;">
     <div class="info">
       <div>
         {{personalizadaP}} pontos
@@ -9,31 +9,38 @@
       </div>
     </div>
 
-    <div style="margin-top: 50px;">
+    <div class="flex" style="overflow: auto;">
       <grafico-component v-if="personalizadaVetores"
       :agrupamento="[0,1,2]"
       :vetores="personalizadaVetores" />
     </div>
 
-    <div class="column">
+    <div class="column no-wrap">
       <div>
         <input />
       </div>
 
-      <div v-for="(vetor, index) in vetores" :key="index" class="flex no-wrap">
-        <input type="checkbox" :value="index" v-model="personalizadaI"/>
-        <vetor-component :vetor="vetor" />
+      <div class="column no-wrap" style="overflow: auto;">
+        <div v-for="(vetor, index) in vetoresSlice" :key="index" class="flex no-wrap q-px-sm" style="align-items: center;">
+          <input type="checkbox" :value="index" v-model="personalizadaI" />
+          <vetor-component :vetor="vetor" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import * as ConjuntosDAO from 'src/lib/DAO/conjuntosDAO.js'
+import * as VetoresDAO from 'src/lib/DAO/vetoresDAO.js'
+
 import * as Conjunto from 'src/lib/conjunto.js'
 import * as Vetor from 'src/lib/vetor.js'
 import * as Solucao from 'src/lib/solucao.js'
+
 import GraficoComponent from 'src/components/Grafico.vue'
 import VetorComponent from 'src/components/Vetor.vue'
+
 
 export default {
   name: 'Solucao',
@@ -48,6 +55,14 @@ export default {
       personalizadaI: [],
       personalizadaVetores: [],
       personalizadaP: null
+    }
+  },
+  computed: {
+    vetoresSlice () {
+      if (this.vetores) {
+        return this.vetores.slice(0, 10)
+      }
+      return []
     }
   },
   watch: {
@@ -69,7 +84,7 @@ export default {
   },
   methods: {
     carregarVetores () {
-      Vetor.getVetores()
+      VetoresDAO.get()
       .then(vetores => Vetor.compilarVetores(vetores, this.conjuntos))
       .then(vetores => Vetor.linkarVetores(vetores, this.conjuntos))
       .then(linkados => {
@@ -85,7 +100,7 @@ export default {
     }
   },
   mounted () {
-    Conjunto.getConjuntos()
+    ConjuntosDAO.get()
     .then(conjuntos => Conjunto.parseConjuntos(conjuntos))
     .then(parsed => {
       this.conjuntos = parsed.map(c => c.objetos)
@@ -101,8 +116,7 @@ export default {
   flex-direction: row;
 }
 .info {
-  top: 30px;
-  position: fixed;
+  position: absolute;
 }
 .info div {
   margin: 5px;

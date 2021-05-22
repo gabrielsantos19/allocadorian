@@ -1,6 +1,7 @@
 <template>
-  <div class="container">
-    {{vetor}}
+  <div class="container" :title="JSON.stringify(vetor)">
+    {{texto}}<br />
+    Pontos: {{this.vetor.p}}
   </div>
 </template>
 
@@ -13,8 +14,16 @@ export default {
       required: true
     }
   },
-  data () {
-    return {}
+  computed: {
+    texto () {
+      let valores = []
+      for (let i=0; i<this.vetor.objetos.length; ++i) {
+        const objeto = this.vetor.objetos[i]
+        const key = Object.keys(objeto)[0]
+        valores.push(objeto[key])
+      }
+      return valores.join(' • ')
+    }
   }
 }
 </script>
@@ -22,10 +31,10 @@ export default {
 <style scoped>
 .container {
   width: 250px;
-  height: 200px;
   background-color: rgb(255, 70, 70);
+  border-radius: 7px;
   padding: 5px 15px;
   margin: 0px 10px 5px 10px;
-  overflow: auto;
+  overflow: hidden;
 }
 </style>

@@ -1,12 +1,11 @@
 <template>
-  <q-page class="row">
-    <div class="col">
+  <q-page class="fullscreen row no-wrap" style="margin-top: 42px">
+    <div class="column no-wrap col">
       <div class="row">
-        <div class="row q-my-sm">
+        <div class="row no-wrap q-my-sm" style="overflow: auto;">
           <div v-for="(tabela, index) in tabelasParsed" 
               :key="index"
-              class="column"
-          >
+              class="column">
             <button @click="setTabelaAtual(index)">
               {{ tabela.descricao.nome }}
             </button>
@@ -19,6 +18,7 @@
           </button>
         </div>
       </div>
+
       <div v-if="tabelaParsed" class="row" style="align-items: center;">
         <div style="font-size: 55px" class="q-px-md">
           {{tabelaParsed.descricao.nome}}
@@ -37,33 +37,38 @@
           </button>
         </div>
       </div>
-      <div v-if="tabelaParsed" class="row">
+
+      <div v-if="tabelaParsed" class="row" style="overflow: auto;">
         <objeto-component v-for="(linha, index) in tabelaParsed.objetos" 
           :key="index"
           :objeto="linha"
           @click="editarObjeto(index)"
-          @remover="removerObjeto(index)"
-        />
+          @remover="removerObjeto(index)" />
       </div>
     </div>
-    <div class="column q-px-sm" style="background-color: rgb(150,150,150)">
+
+    <div class="column q-px-sm q-pb-sm" style="background-color: rgb(150,150,150)">
       <div class="row">
         <div>{{editorTitulo}}</div>
         <button @click="editorSalvar(editorTexto)">Salvar</button>
         <button @click="cancelarEdicao()" style="align-self: end">Cancelar</button>
       </div>
       <div v-if="editorAberto" class="column col">
-        <textarea cols="60" rows="40" v-model="editorTexto"></textarea>
+        <textarea cols="60" v-model="editorTexto" class="col" />
       </div>
     </div>
   </q-page>
 </template>
 
 <script>
-import ObjetoComponent from 'src/components/Objeto.vue'
+import * as ConjuntosDAO from 'src/lib/DAO/conjuntosDAO.js'
+
 import * as JSP from 'src/lib/JSP.js'
 import * as Template from 'src/lib/template.js'
 import * as Conjunto from 'src/lib/conjunto.js'
+
+import ObjetoComponent from 'src/components/Objeto.vue'
+
 
 export default {
   components: { 
@@ -173,7 +178,7 @@ export default {
     }
   },
   mounted () {
-    Conjunto.getConjuntos()
+    ConjuntosDAO.get()
     .then(conjuntos => {
       this.tabelas = conjuntos
 
