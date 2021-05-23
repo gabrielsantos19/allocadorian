@@ -1,34 +1,22 @@
-export async function linkarSolucoes (solucoes, vetores) {
+import * as Solucao from 'src/lib/solucao.js'
+import * as Vetores from 'src/lib/vetores.js'
+
+
+export async function linkar (solucoes, vetores) {
   for (let i=0; i<solucoes.length; ++i) {
     const solucao = solucoes[i]
-    solucao.vetores = linkar(solucao, vetores)
-  }
-  return solucoes
-}
-
-function compilarSolucao (solucao, vetores) {
-  const compilada = []
-  for (let i=0; i<solucao.i.length; ++i) {
-    compilada.push(vetores[solucao.i[i]].compilado)
-  }
-  return compilada
-}
-
-function compilarSolucoes (solucoes, vetores) {
-  for (let i=0; i<solucoes.length; ++i) {
-    const solucao = solucoes[i]
-    solucao.compilada = compilarSolucao(solucao, vetores)
+    solucao.vetores = await Solucao.linkar(solucao, vetores)
   }
   return solucoes
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 
 
-function filtrarNova (nova, vetores, conjuntos) {
-  nova.compilada = compilarSolucao(nova, vetores)
-  if (filtrarSolucao(nova, vetores, conjuntos)) {
+
+async function filtrarNova (nova, vetores, conjuntos) {
+  nova.compilada = await Solucao.compilar(nova, vetores)
+  if (Solucao.filtrarSolucao(nova, vetores, conjuntos)) {
     return true
   }
   return false
@@ -63,7 +51,8 @@ function filtrarObrigatoriedade (nova, obrigatoriedades) {
     const superiorObrigatoriedade = obrigatoriedade.i[obrigatoriedade.i.length - 1]
     const inferiorObrigatoriedade = obrigatoriedade.i[0]
 
-    if (inferiorNova <= inferiorObrigatoriedade && superiorObrigatoriedade <= superiorNova) {
+    if (inferiorNova <= inferiorObrigatoriedade 
+    && superiorObrigatoriedade <= superiorNova) {
       const inter = intersecao(nova.i, obrigatoriedade.i)
       if (inter.length < obrigatoriedade.n) {
         return false
@@ -74,7 +63,7 @@ function filtrarObrigatoriedade (nova, obrigatoriedades) {
 }
 
 export async function gerarArvore (vetores, conjuntos) {
-  const obrigatoriedades = await Vetor.gerarObrigatoriedades(vetores, conjuntos)
+  const obrigatoriedades = await Vetores.gerarObrigatoriedades(vetores, conjuntos)
 
   const arvore = []
   for (let i=0; i<vetores.length; ++i) {
@@ -82,7 +71,7 @@ export async function gerarArvore (vetores, conjuntos) {
     for (let a=i+1; a<vetores.length; ++a) {
       const nova = {i: [i, a]}
       
-      if (filtrarNova(nova, vetores, conjuntos) && 
+      if (await filtrarNova(nova, vetores, conjuntos) && 
           filtrarObrigatoriedade(nova, obrigatoriedades)) {
         lista.push(a)
       }
@@ -128,7 +117,7 @@ function proximo (conjunto, ultimo) {
 export async function solucao (vetores, conjuntos) {
   const solucoes = []
 
-  const obrigatoriedades = await Vetor.gerarObrigatoriedades(vetores, conjuntos)
+  const obrigatoriedades = await Vetores.gerarObrigatoriedades(vetores, conjuntos)
   const arvore = await gerarArvore(vetores, conjuntos)
 
   let poped = null
@@ -139,7 +128,7 @@ export async function solucao (vetores, conjuntos) {
     contador += 1
     const nova = {i: pilha.slice()}
 
-    if (filtrarNova(nova, vetores, conjuntos) 
+    if (await filtrarNova(nova, vetores, conjuntos) 
     && filtrarObrigatoriedade(nova, obrigatoriedades)) {
       
       if (filtrarFinal(nova, vetores, conjuntos)
@@ -163,36 +152,10 @@ export async function solucao (vetores, conjuntos) {
 
   for (let i=0; i<solucoes.length; ++i) {
     const solucao = solucoes[i]
-    solucao.p = pontuarSolucao(solucao, vetores, conjuntos)
+    solucao.p = await Solucao.pontuarSolucao(solucao, vetores, conjuntos)
   }
 
-  setSolucoes(solucoes)
   return solucoes
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-
-
-export async function getSolucoes () {
-  const solucoes = localStorage.getItem('solucoes')
-  if (solucoes) {
-    return JSON.parse(solucoes)
-  } else {
-    return []
-  }
-}
-
-function setSolucoes (solucoes) {
-  const solucoesRaw = []
-  for (let i=0; i<solucoes.length; ++i) {
-    solucoesRaw.push({
-      i: solucoes[i].i,
-      p: solucoes[i].p
-    })
-  }
-  
-  localStorage.setItem('solucoes', JSON.stringify(solucoesRaw))
 }
 
 
@@ -203,6 +166,6 @@ function sortFunction (solucao1, solucao2) {
   return solucao2.p - solucao1.p
 }
 
-function sort (solucoes) {
+export async function sort (solucoes) {
   return solucoes.sort(sortFunction)
 }

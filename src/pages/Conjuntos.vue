@@ -66,7 +66,7 @@ import * as ConjuntosDAO from 'src/lib/DAO/conjuntosDAO.js'
 
 import * as JSP from 'src/lib/JSP.js'
 import * as Template from 'src/lib/template.js'
-import * as Conjunto from 'src/lib/conjunto.js'
+import * as Conjuntos from 'src/lib/conjuntos.js'
 
 import ObjetoComponent from 'src/components/Objeto.vue'
 
@@ -184,7 +184,7 @@ export default {
     .then(conjuntos => {
       this.tabelas = conjuntos
 
-      Conjunto.parseConjuntos(conjuntos)
+      Conjuntos.parse(conjuntos)
       .then(parsed => {
         this.tabelasParsed = parsed
         this.setTabelaAtual(0)

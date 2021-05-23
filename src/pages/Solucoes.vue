@@ -3,7 +3,7 @@
     <div>
       <button @click="gerarSolucoes()">Gerar Soluções</button>
       <button @click="gerarArvore()">Gerar Árvore</button>
-      {{compilados ? compilados.length : '0'}} conjuntos carregados
+      {{conjuntos ? conjuntos.length : '0'}} conjuntos carregados
       {{vetores ? vetores.length : '0'}} vetores carregados
       {{solucoes ? solucoes.length : '0'}} solucoes
       {{tSolucoes ? `em ${tSolucoes}ms` : ''}}
@@ -19,13 +19,13 @@
 </template>
 
 <script>
-import * as CompiladosDAO from 'src/lib/DAO/compiladosDAO.js'
+import * as ConjuntosDAO from 'src/lib/DAO/conjuntosDAO.js'
 import * as VetoresDAO from 'src/lib/DAO/vetoresDAO.js'
 import * as SolucoesDAO from 'src/lib/DAO/solucoesDAO.js'
 
-import * as Conjunto from 'src/lib/conjunto.js'
-import * as Vetor from 'src/lib/vetor.js'
-import * as Solucao from 'src/lib/solucao.js'
+import * as Conjuntos from 'src/lib/conjuntos.js'
+import * as Vetores from 'src/lib/vetores.js'
+import * as Solucoes from 'src/lib/solucoes.js'
 
 import SolucaoComponent from 'src/components/Solucao.vue'
 
@@ -37,7 +37,7 @@ export default {
   },
   data () {
     return {
-      compilados: null,
+      conjuntos: null,
       vetores: null,
       solucoes: null,
       tSolucoes: null,
@@ -53,14 +53,14 @@ export default {
   },
   methods: {
     gerarArvore () {
-      Solucao.gerarArvore(this.vetores, this.compilados)
+      Solucoes.gerarArvore(this.vetores, this.conjuntos)
     },
     gerarSolucoes () {
-      if (this.compilados && this.vetores) {
+      if (this.conjuntos && this.vetores) {
         const t0 = performance.now()
 
         this.solucoes = null
-        Solucao.solucao(this.vetores, this.compilados)
+        Solucoes.solucao(this.vetores, this.conjuntos)
         .then(sols => {
           SolucoesDAO.post(sols)
           this.solucoes = sols
@@ -71,20 +71,20 @@ export default {
   },
   mounted () {
     async function carregar () {
-      const parsed = await CompiladosDAO.get()
-      .then(compilados => Conjunto.parseCompilados(compilados))
+      const conjuntos = await ConjuntosDAO.get()
+      .then(conjuntos => Conjuntos.parse(conjuntos))
 
       const vetores = await VetoresDAO.get()
-      .then(linkados => Vetor.compilarVetores(linkados, parsed))
+      .then(linkados => Vetores.compilar(linkados, conjuntos))
 
       const solucoes = await SolucoesDAO.get()
       
-      return [parsed, vetores, solucoes]
+      return [conjuntos, vetores, solucoes]
     }
     
     carregar()
     .then(a => {
-      this.compilados = a[0]
+      this.conjuntos = a[0]
       this.vetores = a[1]
       this.solucoes = a[2]
     })

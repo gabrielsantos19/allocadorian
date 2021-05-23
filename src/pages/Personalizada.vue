@@ -32,12 +32,11 @@
 
 <script>
 import * as ConjuntosDAO from 'src/lib/DAO/conjuntosDAO.js'
-import * as CompiladosDAO from 'src/lib/DAO/compiladosDAO.js'
 import * as VetoresDAO from 'src/lib/DAO/vetoresDAO.js'
 import * as PersonalizadaDAO from 'src/lib/DAO/personalizadaDAO.js'
 
-import * as Conjunto from 'src/lib/conjunto.js'
-import * as Vetor from 'src/lib/vetor.js'
+import * as Conjuntos from 'src/lib/conjuntos.js'
+import * as Vetores from 'src/lib/vetores.js'
 import * as Solucao from 'src/lib/solucao.js'
 
 import GraficoComponent from 'src/components/Grafico.vue'
@@ -53,7 +52,6 @@ export default {
   data () {
     return {
       conjuntos: null,
-      compilados: null,
       vetores: null,
       personalizadaI: [],
       personalizadaVetores: [],
@@ -70,15 +68,15 @@ export default {
   },
   watch: {
     personalizadaI () {
-      async function construir (i, vetores, compilados) {
+      async function construir (i, vetores, conjuntos) {
         const nova = {i: i}
-        nova.compilada = await Solucao.compilarSolucao(nova, vetores)
-        nova.p = await Solucao.pontuarSolucao(nova, vetores, compilados)
+        nova.compilada = await Solucao.compilar(nova, vetores)
+        nova.p = await Solucao.pontuarSolucao(nova, vetores, conjuntos)
         nova.vetores = await Solucao.linkar(nova, vetores)
 
         return nova
       }
-      construir(this.personalizadaI, this.vetores, this.compilados)
+      construir(this.personalizadaI, this.vetores, this.conjuntos)
       .then(s => {
         this.personalizadaP = s.p
         this.personalizadaVetores = s.vetores
@@ -88,28 +86,24 @@ export default {
   mounted () {
     async function carregar () {
       const conjuntos = await ConjuntosDAO.get()
-      .then(conjuntos => Conjunto.parseConjuntos(conjuntos))
-
-      const compilados = await CompiladosDAO.get()
-      .then(compilados => Conjunto.parseCompilados(compilados))
+      .then(conjuntos => Conjuntos.parse(conjuntos))
 
       const vetores = await VetoresDAO.get()
-      .then(vetores => Vetor.compilarVetores(vetores, compilados))
-      .then(vetores => Vetor.linkarVetores(vetores, conjuntos))
+      .then(vetores => Vetores.compilar(vetores, conjuntos))
+      .then(vetores => Vetores.linkar(vetores, conjuntos))
 
       const personalizada = await PersonalizadaDAO.get()
       personalizada.vetores = await Solucao.linkar(personalizada, vetores)
 
-      return [conjuntos, compilados, vetores, personalizada]
+      return [conjuntos, vetores, personalizada]
     }
     carregar()
     .then(a => {
       this.conjuntos = a[0]
-      this.compilados = a[1]
-      this.vetores = a[2]
-      this.personalizadaI = a[3].i
-      this.personalizadaP = a[3].p
-      this.personalizadaVetores = a[3].vetores
+      this.vetores = a[1]
+      this.personalizadaI = a[2].i
+      this.personalizadaP = a[2].p
+      this.personalizadaVetores = a[2].vetores
     })
   }
 }

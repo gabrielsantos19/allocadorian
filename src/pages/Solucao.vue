@@ -11,9 +11,9 @@ import * as ConjuntosDAO from 'src/lib/DAO/conjuntosDAO.js'
 import * as VetoresDAO from 'src/lib/DAO/vetoresDAO.js'
 import * as SolucoesDAO from 'src/lib/DAO/solucoesDAO.js'
 
-import * as Conjunto from 'src/lib/conjunto.js'
-import * as Vetor from 'src/lib/vetor.js'
-import * as Solucao from 'src/lib/solucao.js'
+import * as Conjuntos from 'src/lib/conjuntos.js'
+import * as Vetores from 'src/lib/vetores.js'
+import * as Solucoes from 'src/lib/solucoes.js'
 
 import GraficoComponent from 'src/components/Grafico.vue'
 
@@ -41,13 +41,13 @@ export default {
 
     async function carregar () {
       const conjuntos = await ConjuntosDAO.get()
-      .then(conjuntos => Conjunto.parseConjuntos(conjuntos))
+      .then(conjuntos => Conjuntos.parse(conjuntos))
 
       const vetores = await VetoresDAO.get()
-      .then(vetores => Vetor.linkarVetores(vetores, conjuntos))
+      .then(vetores => Vetores.linkar(vetores, conjuntos))
 
       const solucoes = await SolucoesDAO.get()
-      .then(solucoes => Solucao.linkarSolucoes(solucoes, vetores))
+      .then(solucoes => Solucoes.linkar(solucoes, vetores))
 
       return [conjuntos, vetores, solucoes]
     }

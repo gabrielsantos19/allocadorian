@@ -3,7 +3,6 @@
     <div>
       <button @click="gerar()">Gerar vetores</button>
       <button @click="gerarObrigatoriedades()">Obrigatoriedades</button>
-      <button @click="compilar()">Compilar conjuntos</button>
       {{vetores ? vetores.length : 0}} vetores
       {{vetoresTime ? `gerados em ${vetoresTime} milisegundos` : 'carregados'}}
       {{conjuntos ? `${conjuntos.length} conjuntos carregados` : ''}}
@@ -18,11 +17,10 @@
 
 <script>
 import * as ConjuntosDAO from 'src/lib/DAO/conjuntosDAO.js'
-import * as CompiladosDAO from 'src/lib/DAO/compiladosDAO.js'
 import * as VetoresDAO from 'src/lib/DAO/vetoresDAO.js'
 
-import * as Conjunto from 'src/lib/conjunto.js'
-import * as Vetor from 'src/lib/vetor.js'
+import * as Conjuntos from 'src/lib/conjuntos.js'
+import * as Vetores from 'src/lib/vetores.js'
 
 import VetorComponent from 'src/components/Vetor.vue'
 
@@ -35,7 +33,6 @@ export default {
   data () {
     return {
       conjuntos: null,
-      compilados: null,
       vetores: null,
       vetoresTime: null,
     }
@@ -50,36 +47,30 @@ export default {
   },
   methods: {
     gerarObrigatoriedades () {
-      Vetor.gerarObrigatoriedades(this.vetores, this.compilados)
+      Vetores.gerarObrigatoriedades(this.vetores, this.conjuntos)
       .then(o => console.log(o))
     },
     gerar () {
       const t0 = performance.now()
-      Vetor.cartesiano(this.compilados)
-      .then(vetores => Vetor.linkarVetores(vetores, this.conjuntos))
-      .then(linkados => {
-        this.vetores = linkados
-        this.vetoresTime = performance.now() - t0
+      Vetores.cartesiano(this.conjuntos)
+      .then(vetores => {
+        VetoresDAO.post(vetores)
+        
+        Vetores.linkar(vetores, this.conjuntos)
+        .then(linkados => {
+          this.vetores = linkados
+          this.vetoresTime = performance.now() - t0
+        })
       })
     },
-    compilar () {
-      ConjuntosDAO.get()
-      .then(conjuntos => Conjunto.compilarConjuntos(conjuntos))
-      .then(compilados => {
-        CompiladosDAO.post(compilados)
-
-        Conjunto.parseCompilados(compilados)
-        .then(parsed => this.compilados = parsed)
-      })
-    }
   },
   mounted () {
     async function carregar () {
       const conjuntos = await ConjuntosDAO.get()
-      .then(conjuntos => Conjunto.parseConjuntos(conjuntos))
+      .then(conjuntos => Conjuntos.parse(conjuntos))
 
       const vetores = await VetoresDAO.get()
-      .then(vetores => Vetor.linkarVetores(vetores, conjuntos))
+      .then(vetores => Vetores.linkar(vetores, conjuntos))
 
       return [conjuntos, vetores]
     }
