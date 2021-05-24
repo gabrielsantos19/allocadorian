@@ -20,7 +20,7 @@ export async function pontuarSolucao(solucao, vetores, conjuntos) {
   return pontos
 }
 
-function filtrarFinal(solucao, vetores, conjuntos) {
+export async function filtrarFinal(solucao, vetores, conjuntos) {
   for (let i=0; i<solucao.i.length; ++i) {
     const vetor = vetores[solucao.i[i]]
     if (!Vetor.filtrarFinal(vetor, conjuntos, solucao)) {

@@ -131,7 +131,7 @@ export async function solucao (vetores, conjuntos) {
     if (await filtrarNova(nova, vetores, conjuntos) 
     && filtrarObrigatoriedade(nova, obrigatoriedades)) {
       
-      if (filtrarFinal(nova, vetores, conjuntos)
+      if (await Solucao.filtrarFinal(nova, vetores, conjuntos)
       && obrigatoriedadeCompleta(nova, obrigatoriedades)) {
         solucoes.push(nova)
       }

@@ -80,10 +80,11 @@ function filtrarVetores (vetores, conjuntoI, objetoI) {
 
 function gerarObrigatoriedadesConjunto (vetores, conjunto, conjuntoI) {
   const obrigatoriedades = []
+  const objetoBase = conjunto.objetoBase
   for (let i=0; i<conjunto.objetos.length; ++i) {
     const objeto = conjunto.objetos[i]
 
-    const n = Objeto.obrigatoriedade(objeto)
+    const n = Objeto.obrigatoriedade(objeto, objetoBase)
     if (n > 0) {
       const filtrados = filtrarVetores(vetores, conjuntoI, i)
       obrigatoriedades.push({
