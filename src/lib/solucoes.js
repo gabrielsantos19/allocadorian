@@ -124,15 +124,16 @@ export async function solucao (vetores, conjuntos) {
   const pilha = [0]
   let contador = 0
 
-  while (pilha.length > 0 && solucoes.length < 10) {
+  while (pilha.length > 0 && solucoes.length < 40) {
     contador += 1
     const nova = {i: pilha.slice()}
 
-    if (await filtrarNova(nova, vetores, conjuntos) 
-    && filtrarObrigatoriedade(nova, obrigatoriedades)) {
+    if (filtrarObrigatoriedade(nova, obrigatoriedades)
+    && await filtrarNova(nova, vetores, conjuntos)) {
       
-      if (await Solucao.filtrarFinal(nova, vetores, conjuntos)
-      && obrigatoriedadeCompleta(nova, obrigatoriedades)) {
+      if (poped === null
+      && obrigatoriedadeCompleta(nova, obrigatoriedades)
+      && await Solucao.filtrarFinal(nova, vetores, conjuntos)) {
         solucoes.push(nova)
       }
 
