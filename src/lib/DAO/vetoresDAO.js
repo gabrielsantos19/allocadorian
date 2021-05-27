@@ -8,12 +8,6 @@ export async function get () {
 }
 
 export async function post (vetores) {
-  const vetoresRaw = vetores.map(vetor => { 
-    return {
-      i:vetor.i,
-      p: vetor.p
-    }
-  })
-  const raw = JSON.stringify(vetoresRaw)
+  const raw = JSON.stringify(vetores, ['i', 'p'])
   localStorage.setItem('vetores', raw)
 }

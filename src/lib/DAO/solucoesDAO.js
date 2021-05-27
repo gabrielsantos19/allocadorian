@@ -8,13 +8,6 @@ export async function get () {
 }
 
 export async function post (solucoes) {
-  const solucoesRaw = []
-  for (let i=0; i<solucoes.length; ++i) {
-    solucoesRaw.push({
-      i: solucoes[i].i,
-      p: solucoes[i].p
-    })
-  }
-  const raw = JSON.stringify(solucoesRaw)
+  const raw = JSON.stringify(solucoes, ['i', 'p'])
   localStorage.setItem('solucoes', raw)
 }
