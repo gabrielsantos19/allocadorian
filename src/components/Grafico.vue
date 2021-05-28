@@ -1,7 +1,7 @@
 <template>
-  <div class="container">
-    <div v-for="(grupo, key) in agrupados" :key="key" class="elemento" :style="{ 'background-color': backgroundColor}">
-      <div>
+  <div class="grafico">
+    <div v-for="(grupo, key) in agrupados" :key="key" class="elemento" :style="{ 'background-color': backgroundColor }">
+      <div :title="JSON.stringify(grupo[0])">
         {{titulo(grupo)}}
       </div>
       <grafico-component :vetores="grupo" :agrupamento="agrupamento.slice(1)" />
@@ -35,8 +35,13 @@ export default {
       return {}
     },
     backgroundColor () {
-      const i = this.agrupamento.length
-      return `rgb(50,200,${i*100%255})`
+      const cores = [
+        '#282a35',
+        '#6e0000',
+        '#027d50',
+        '#00104a',
+      ]
+      return cores[this.agrupamento.length % cores.length]
     }
   },
   methods: {
@@ -55,20 +60,23 @@ export default {
     },
     titulo (grupo) {
       const objeto = grupo[0].objetos[this.agrupamento[0]]
-      return Object.values(objeto)[0]
+      const tit = Object.values(objeto).slice(0, 3)
+      return tit.join(' · ')
     }
   }
 }
 </script>
 
 <style scoped>
-.container {
+.grafico {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  color: white;
 }
 .elemento {
-  padding: 10px;
-  margin: 5px;
+  padding: 7px;
+  margin: 4px;
+  border-radius: 7px;
 }
 </style>
