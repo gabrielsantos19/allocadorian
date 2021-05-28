@@ -28,11 +28,16 @@ export function filtrarSolucao (vetor, conjuntos, solucao) {
   for (let i=0; i<vetor.i.length; ++i) {
     const conjunto = conjuntos[i]
     const objeto = conjunto.objetos[vetor.i[i]]
-    if (!Objeto.filtrarSolucao(objeto, conjunto.objetoBase, solucao)) {
-      return false
+    const retorno = Objeto.filtrarSolucao(objeto, conjunto.objetoBase, solucao)
+    
+    if (!retorno.valor) {
+      return retorno
     }
   }
-  return true
+  return {
+    valor: true,
+    erro: '',
+  }
 }
 
 export function pontuarSolucao (vetor, conjuntos, solucao) {

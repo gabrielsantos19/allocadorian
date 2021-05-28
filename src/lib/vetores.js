@@ -83,14 +83,11 @@ function gerarObrigatoriedadesConjunto (vetores, conjunto, conjuntoI) {
   const objetoBase = conjunto.objetoBase
   for (let i=0; i<conjunto.objetos.length; ++i) {
     const objeto = conjunto.objetos[i]
-
-    const n = Objeto.obrigatoriedade(objeto, objetoBase)
-    if (n > 0) {
+    const retorno = Objeto.obrigatoriedade(objeto, objetoBase)
+    if (retorno.n > 0) {
       const filtrados = filtrarVetores(vetores, conjuntoI, i)
-      obrigatoriedades.push({
-        i: filtrados,
-        n: n
-      })
+      retorno.i = filtrados
+      obrigatoriedades.push(retorno)
     }
   }
   return obrigatoriedades

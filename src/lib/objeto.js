@@ -14,18 +14,34 @@ export function pontuarVetor (objeto, base, vetor) {
 }
 
 export function obrigatoriedade (objeto, base) {
-  let n = 0
   if (base.obrigatoriedade) {
-    n += base.obrigatoriedade(objeto)
+    const retorno = base.obrigatoriedade(objeto)
+    if (retorno !== undefined)
+      return {
+        n: retorno.valor,
+        erro: retorno.erro,
+      }
   }
-  return n
+  return {
+    n: 0,
+    erro: '',
+  }
 }
 
 export function filtrarSolucao (objeto, base, solucao) {
-  if (base.filtrarSolucao && base.filtrarSolucao(objeto, solucao) === false) {
-    return false
+  if (base.filtrarSolucao) {
+    const retorno = base.filtrarSolucao(objeto, solucao)
+    if (retorno !== undefined) {
+      return {
+        valor: retorno.valor,
+        erro: retorno.erro,
+      }
+    }
   }
-  return true
+  return {
+    valor: true,
+    erro: '',
+  }
 }
 
 export function pontuarSolucao (objeto, base, solucao) {

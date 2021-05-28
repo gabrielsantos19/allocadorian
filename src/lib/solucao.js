@@ -4,11 +4,15 @@ import * as Vetor from 'src/lib/vetor.js'
 export function filtrarSolucao(solucao, vetores, conjuntos) {
   for (let i=0; i<solucao.i.length; ++i) {
     const vetor = vetores[solucao.i[i]]
-    if (!Vetor.filtrarSolucao(vetor, conjuntos, solucao.compilada)) {
-      return false
+    const retorno = Vetor.filtrarSolucao(vetor, conjuntos, solucao.compilada)
+    if (!retorno.valor) {
+      return retorno
     }
   }
-  return true
+  return {
+    valor: true,
+    erro: '',
+  }
 }
 
 export async function pontuarSolucao(solucao, vetores, conjuntos) {
