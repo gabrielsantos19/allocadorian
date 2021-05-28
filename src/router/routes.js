@@ -29,6 +29,21 @@ const routes = [
     ]
   },
   {
+    path: '/configuracoes',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('src/pages/Configuracoes.vue') }
+    ]
+  },
+  {
+    path: '/sobre',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('src/pages/Configuracoes.vue') }
+    ]
+  },
+
+  {
     path: '/solucao',
     component: () => import('layouts/MainLayout.vue'),
     children: [
