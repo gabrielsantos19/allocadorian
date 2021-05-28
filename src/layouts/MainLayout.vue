@@ -1,25 +1,29 @@
 <template>
   <div class="fullscreen column no-wrap">
     <nav class="mnav">
-      <div class="q-mx-lg" style="font-size: 28px; color: white">
+      <div class="logo">
         Allocadorian
       </div>
-      <div class="row no-wrap">
-        <router-link to="/personalizada">
-          <button>Personalizada</button>
+      <div class="menu">
+        <router-link to="/personalizada" tag="button">
+          Personalizada
         </router-link>
-        <router-link to="/">
-          <button>Soluções</button>
+        <router-link to="/" tag="button">
+          Soluções
         </router-link>
-        <router-link to="/vetores">
-          <button>Vetores</button>
+        <router-link to="/vetores" tag="button">
+          Vetores
         </router-link>
-        <router-link to="/conjuntos">
-          <button>Conjuntos</button>
+        <router-link to="/conjuntos" tag="button">
+          Conjuntos
         </router-link>
         
-        <button>Importar sessão</button>
-        <button>Exportar sessão</button>
+        <router-link to="/configuracoes" tag="button">
+          Configurações
+        </router-link>
+        <router-link to="/sobre" tag="button">
+          Sobre
+        </router-link>
       </div>
     </nav>
 
@@ -42,5 +46,16 @@ export default {
   align-items: center; 
   background-color: rgb(70,70,70); 
   overflow: auto;
+}
+.logo {
+  margin: 0px 24px;
+  font-size: 28px;
+  color: white;
+}
+.menu {
+  display: flex;
+  flex-flow: row nowrap;
+  flex-grow: 1;
+  flex-shrink: 0;
 }
 </style>
