@@ -1,14 +1,20 @@
 <template>
   <main class="column no-wrap" style="overflow: auto;">
-    <div>
-      <button @click="gerarSolucoes()">Gerar Soluções</button>
-      <button @click="gerarArvore()">Gerar Árvore</button>
-      {{conjuntos ? conjuntos.length : '0'}} conjuntos carregados
-      {{vetores ? vetores.length : '0'}} vetores carregados
-      {{solucoes ? solucoes.length : '0'}} solucoes
-      {{tSolucoes ? `em ${tSolucoes}ms` : ''}}
+    <div class="menu">
+      <span class="titulo">
+        Soluções
+      </span>
+      <button @click="gerar()">
+        Gerar soluções
+      </button>
+      <input class="filtro" placeholder="filtrar soluções" />
+      <div>
+        {{vetores ? vetores.length : '0'}} vetores carregados; 
+        {{solucoes ? solucoes.length : '0'}} solucoes
+        {{tSolucoes ? `em ${tSolucoes}ms` : ''}}
+      </div>
     </div>
-    <div v-if="sliced" class="row">
+    <div v-if="sliced" class="solucoes">
       <div v-for="(solucao, index) in sliced" :key="index">
         <solucao-component 
           :solucao="solucao" 
@@ -46,16 +52,13 @@ export default {
   computed: {
     sliced: function () {
       if (this.solucoes) {
-        return this.solucoes.slice(0, 25)
+        return this.solucoes.slice(0, 60)
       }
       return []
     },
   },
   methods: {
-    gerarArvore () {
-      Solucoes.gerarArvore(this.vetores, this.conjuntos)
-    },
-    gerarSolucoes () {
+    gerar () {
       if (this.conjuntos && this.vetores) {
         const t0 = performance.now()
 
@@ -91,3 +94,35 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.menu {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  color: white;
+  min-height: 42px;
+  max-height: 42px;
+  flex-shrink: 0;
+  background-color: rgb(40,40,40);
+}
+.titulo {
+  font-size: 22px;
+  padding: 0px 15px 0px 15px;
+  overflow: hidden;
+}
+.filtro {
+  flex-grow: 1;
+  max-width: 500px;
+  margin: 0px 10px;
+}
+.solucoes {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  overflow: auto;
+  padding-top: 10px;
+  padding-bottom: 300px;
+}
+</style>
