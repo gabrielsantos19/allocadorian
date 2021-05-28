@@ -1,13 +1,26 @@
 <template>
-  <main class="column no-wrap" style="overflow: auto; background-color: #162447;">
-    <div>
-      <button @click="gerar()">Gerar vetores</button>
-      <button @click="gerarObrigatoriedades()">Obrigatoriedades</button>
-      {{vetores ? vetores.length : 0}} vetores
-      {{vetoresTime ? `gerados em ${vetoresTime} milisegundos` : 'carregados'}}
-      {{conjuntos ? `${conjuntos.length} conjuntos carregados` : ''}}
+  <main class="container">
+    <div class="menu">
+      <span class="titulo">
+        Vetores
+      </span>
+      <div>
+        <button @click="gerar()">Gerar vetores</button>
+      </div>
+      <input class="filtro" placeholder="filtrar vetores"/>
+      <div>
+        <span>
+          {{conjuntos ? conjuntos.length : 0}} conjuntos carregados
+        </span>
+        <span>
+          {{vetores ? vetores.length : 0}} vetores
+        </span>
+        <span v-if="vetoresTime">
+          gerados em {{vetoresTime}} milisegundos
+        </span>
+      </div>
     </div>
-    <div v-if="vetores" class="row">
+    <div v-if="vetores" class="vetores">
       <div v-for="(vetor, index) in sliced" :key="index">
         <vetor-component :vetor="vetor" class="vetor" />
       </div>
@@ -46,10 +59,6 @@ export default {
     }
   },
   methods: {
-    gerarObrigatoriedades () {
-      Vetores.gerarObrigatoriedades(this.vetores, this.conjuntos)
-      .then(o => console.log(o))
-    },
     gerar () {
       const t0 = performance.now()
       Vetores.cartesiano(this.conjuntos)
@@ -84,6 +93,42 @@ export default {
 </script>
 
 <style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  overflow: auto;
+}
+.menu {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  color: white;
+  min-height: 42px;
+  max-height: 42px;
+  flex-shrink: 0;
+  background-color: rgb(40,40,40);
+}
+.titulo {
+  flex-shrink: 0;
+  font-size: 22px;
+  padding: 0px 15px 0px 15px;
+  overflow: hidden;
+}
+.filtro {
+  flex-grow: 1;
+  max-width: 500px;
+  margin: 0px 10px;
+}
+.vetores {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  overflow: auto;
+  padding-top: 10px;
+  padding-bottom: 300px;
+}
 .vetor {
   margin: 0px 10px 5px 10px;
 }
