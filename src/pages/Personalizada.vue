@@ -1,29 +1,42 @@
 <template>
-  <div class="container" style="overflow: auto;">
-    <div class="info">
-      <div>
-        {{personalizadaP}} pontos
+  <div class="container">
+    <div class="solucao">
+      <div class="menu">
+        <span class="titulo">Personalizada</span>
+        <input v-model="filtroSolucao"
+          class="filtro" 
+          placeholder="filtrar vetores" />
+        <input v-model="agrupamento" />
       </div>
-      <div>
-        {{personalizadaI ? personalizadaI.length : 0}} vetores
-      </div>
-    </div>
 
-    <div class="flex" style="overflow: auto;">
+      <div class="painel">
+        <div class="info">
+          <span>{{personalizadaP}} pontos</span>
+        </div>
+        <div class="info">
+          <span>{{personalizadaI ? personalizadaI.length : 0}} vetores</span>
+        </div>
+        <span class="erro" v-if="!valida">Solução inválida</span>
+      </div>
+
       <grafico-component v-if="personalizadaVetores"
-      :agrupamento="[0,1,2]"
-      :vetores="personalizadaVetores" />
+        class="grafico"
+        :agrupamento="JSON.parse(agrupamento)"
+        :vetores="personalizadaVetores" />
     </div>
 
-    <div class="column no-wrap">
-      <div class="column">
-        <input />
+    <div class="coluna-vetores">
+      <div class="filtro-vetor">
+        <input v-model="filtroVetores" />
       </div>
 
-      <div class="column no-wrap" style="overflow: auto;">
-        <div v-for="(vetor, index) in vetoresSlice" :key="index" class="flex no-wrap q-px-sm" style="align-items: center;">
-          <input type="checkbox" :value="index" v-model="personalizadaI" />
-          <vetor-component :vetor="vetor" class="vetor" />
+      <div class="vetores">
+        <div v-for="objeto in vetoresRelevantes" 
+            :key="objeto.origem" 
+            class="flex no-wrap q-px-sm" 
+            style="align-items: center;">
+          <input type="checkbox" :value="objeto.origem" v-model="personalizadaI" />
+          <vetor-component :vetor="objeto.v" class="vetor" />
         </div>
       </div>
     </div>
@@ -44,7 +57,7 @@ import VetorComponent from 'src/components/Vetor.vue'
 
 
 export default {
-  name: 'Solucao',
+  name: 'Personalizada',
   components: {
     GraficoComponent,
     VetorComponent
@@ -53,18 +66,40 @@ export default {
     return {
       conjuntos: null,
       vetores: null,
+
       personalizadaI: [],
       personalizadaVetores: [],
-      personalizadaP: null
+      personalizadaP: null,
+      valida: null,
+
+      filtroSolucao: '',
+      agrupamento: '[0, 1, 2]',
+      filtroVetores: '',
     }
   },
   computed: {
-    vetoresSlice () {
-      if (this.vetores) {
-        return this.vetores.slice(0, 20)
+    vetoresRelevantes () {
+      const vetores = this.vetores
+      const filtroVetores = this.filtroVetores
+      
+      const limite = 50
+      const resultado = []
+
+      if (vetores) {
+        let i=0
+        while (i<vetores.length && resultado.length < limite) {
+          const vetor = vetores[i]
+          if (JSON.stringify(vetor).includes(filtroVetores)) {
+            resultado.push({
+              origem: i,
+              v: vetor
+            })
+          }
+          ++i
+        }
       }
-      return []
-    }
+      return resultado
+    },
   },
   watch: {
     personalizadaI () {
@@ -74,12 +109,16 @@ export default {
         nova.p = await Solucao.pontuarSolucao(nova, vetores, conjuntos)
         nova.vetores = await Solucao.linkar(nova, vetores)
 
-        return nova
+        const valida = Solucao.filtrarSolucao(nova, vetores, conjuntos)
+
+        return [nova, valida]
       }
+
       construir(this.personalizadaI, this.vetores, this.conjuntos)
       .then(s => {
-        this.personalizadaP = s.p
-        this.personalizadaVetores = s.vetores
+        this.personalizadaP = s[0].p
+        this.personalizadaVetores = s[0].vetores
+        this.valida = s[1]
       })
     },
   },
@@ -97,6 +136,7 @@ export default {
 
       return [conjuntos, vetores, personalizada]
     }
+    
     carregar()
     .then(a => {
       this.conjuntos = a[0]
@@ -113,16 +153,85 @@ export default {
 .container {
   display: flex;
   flex-direction: row;
+  flex-grow: 1;
+  overflow: auto;
+}
+.solucao {
+  position: relative;
+  display: flex;
+  flex-flow: column nowrap;
+  flex-grow: 1;
+}
+.menu {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  color: white;
+  min-height: 42px;
+  max-height: 42px;
+  flex-shrink: 0;
+  background-color: rgb(40,40,40);
+}
+.titulo {
+  font-size: 22px;
+  padding: 0px 15px 0px 15px;
+  overflow: hidden;
+}
+.filtro {
+  flex-grow: 1;
+  max-width: 500px;
+  margin: 0px 10px;
+}
+
+.painel {
+  position: absolute;
+  top: 45px;
+  left: 10px;
+  display: flex;
+  flex-flow: row;
+  color: white;
 }
 .info {
-  position: absolute;
-}
-.info div {
-  margin: 5px;
+  margin-right: 5px;
   padding: 5px;
   border-radius: 7px;
-  color: white;
   background-color: grey;
+}
+.erro {
+  margin-right: 5px;
+  padding: 5px;
+  border-radius: 7px;
+  background-color: red;
+}
+
+.grafico {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  overflow: auto;
+  padding-top: 50px;
+}
+
+.coluna-vetores {
+  display: flex;
+  flex-flow: column nowrap;
+  min-width: 350px;
+}
+.filtro-vetor {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0px 5px;
+  background-color: rgb(40, 40, 40);
+}
+.vetores {
+  display: flex;
+  flex-flow: column nowrap;
+  flex-grow: 1;
+  overflow: auto;
+  background-color: rgb(130,130,130); 
 }
 .vetor {
   margin: 5px;
