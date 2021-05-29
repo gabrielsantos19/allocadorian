@@ -1,53 +1,37 @@
 export const descricao = 
 `{
-nome: 'Novo conjunto'
+nome: 'Conjunto'
 }`
 
 export const objetoBase = 
 `{
-// Objeto base
-baseFiltrarVetor: function (vetor) {
+filtrarVetor (objeto, vetor) {
   return true
 },
 
-basePontuarVetor: function (vetor) {
+pontuarVetor (objeto, vetor) {
   return 0
 },
 
-baseFiltrarSolucao: function (solucao) {
-  return true
+obrigatoriedade (objeto) {
+  return {
+    valor: 0,
+    erro: '',
+  }
 },
 
-basePontuarSolucao: function (solucao) {
+filtrarSolucao (objeto, solucao) {
+  return {
+    valor: false,
+    erro: '',
+  }
+},
+
+pontuarSolucao (objeto, solucao) {
   return 0
-},
-
-baseFiltrarFinal: function (solucao) {
-  return true
 },
 }`
 
 export const objeto = 
 `{
-// Novo objeto
-
-filtrarVetor: function (vetor) {
-  return true
-},
-
-pontuarVetor: function (vetor) {
-  return 0
-},
-
-filtrarSolucao: function (solucao) {
-  return true
-},
-
-pontuarSolucao: function (solucao) {
-  return 0
-},
-
-filtrarFinal: function (solucao) {
-  return true
-}
 }`
