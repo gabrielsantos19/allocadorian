@@ -57,7 +57,7 @@
         <span>{{editorTitulo}}</span>
       </div>
       <div class="column col">
-        <textarea v-model="editorTexto" class="col" />
+        <textarea v-model="editorTexto" class="col" style="resize: none;" />
       </div>
     </div>
   </main>
