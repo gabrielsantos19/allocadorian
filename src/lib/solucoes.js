@@ -1,5 +1,6 @@
 import * as Solucao from 'src/lib/solucao.js'
 import * as Vetores from 'src/lib/vetores.js'
+import * as Obrigatoriedades from 'src/lib/obrigatoriedades.js'
 
 
 export async function linkar (solucoes, vetores) {
@@ -23,50 +24,6 @@ async function filtrarNova (nova, vetores, conjuntos) {
   return false
 }
 
-function intersecao (conjunto1, conjunto2) {
-  const inter = []
-  let i1 = 0
-  let i2 = 0
-  while (i1 < conjunto1.length && i2 < conjunto2.length) {
-    const o1 = conjunto1[i1]
-    const o2 = conjunto2[i2]
-    if (o1 < o2) {
-      i1 += 1
-    } else if (o1 > o2) {
-      i2 += 1
-    } else {
-      inter.push(o1)
-      i1 += 1
-      i2 += 1
-    }
-  }
-  return inter
-}
-
-export async function filtrarObrigatoriedade (nova, obrigatoriedades) {
-  const superiorNova = nova.i[nova.i.length - 1]
-  const inferiorNova = nova.i[0]
-
-  for (let i=0; i<obrigatoriedades.length; ++i) {
-    const obrigatoriedade = obrigatoriedades[i]
-    const superiorObrigatoriedade = obrigatoriedade.i[obrigatoriedade.i.length - 1]
-    const inferiorObrigatoriedade = obrigatoriedade.i[0]
-
-    if (inferiorNova <= inferiorObrigatoriedade 
-    && superiorObrigatoriedade <= superiorNova) {
-      const inter = intersecao(nova.i, obrigatoriedade.i)
-      if (inter.length < obrigatoriedade.n) {
-        return {
-          valor: false,
-          i: obrigatoriedade.i,
-          erro: obrigatoriedade.erro,
-        }
-      }
-    }
-  }
-  return { valor: true }
-}
-
 export async function gerarArvore (vetores, conjuntos) {
   const obrigatoriedades = await Vetores.gerarObrigatoriedades(vetores, conjuntos)
 
@@ -77,7 +34,7 @@ export async function gerarArvore (vetores, conjuntos) {
       const nova = {i: [i, a]}
       
       const retorno1 = await filtrarNova(nova, vetores, conjuntos)
-      const retorno2 = await filtrarObrigatoriedade(nova, obrigatoriedades)
+      const retorno2 = await Obrigatoriedades.filtrarParcial(nova, obrigatoriedades)
       if (retorno1 && retorno2.valor) {
         lista.push(a)
       }
@@ -87,23 +44,6 @@ export async function gerarArvore (vetores, conjuntos) {
   }
 
   return arvore
-}
-
-export async function obrigatoriedadeCompleta (solucao, obrigatoriedades) {
-  for (let i=0; i<obrigatoriedades.length; ++i) {
-    const obrigatoriedade = obrigatoriedades[i]
-    const inter = intersecao(solucao.i, obrigatoriedade.i)
-    if (inter.length < obrigatoriedade.n) {
-      return {
-        valor: false,
-        i: obrigatoriedade.i,
-        erro: obrigatoriedade.erro,
-      }
-    }
-  }
-  return {
-    valor: true,
-  }
 }
 
 function proximo (conjunto, ultimo) {
@@ -140,10 +80,10 @@ export async function solucao (vetores, conjuntos) {
     contador += 1
     const nova = {i: pilha.slice()}
 
-    const retorno1 = await filtrarObrigatoriedade(nova, obrigatoriedades)
+    const retorno1 = await Obrigatoriedades.filtrarParcial(nova, obrigatoriedades)
     const retorno2 = await filtrarNova(nova, vetores, conjuntos)
     if (retorno1.valor && retorno2) {
-      const retorno3 = await obrigatoriedadeCompleta(nova, obrigatoriedades)
+      const retorno3 = await Obrigatoriedades.filtrar(nova, obrigatoriedades)
       const retorno4 = await Solucao.filtrarFinal(nova, vetores, conjuntos)
       if (poped === null && retorno3.valor && retorno4) {
         solucoes.push(nova)
