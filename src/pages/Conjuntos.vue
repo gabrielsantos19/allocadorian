@@ -36,16 +36,17 @@
               Remover conjunto
             </button>
           </div>
+          <input v-model="filtro" placeholder="filtrar objetos"/>
         </div>
       </div>
 
       <div v-if="conjuntoParsed" class="objetos">
-        <objeto-component v-for="(linha, index) in conjuntoParsed.objetos" 
+        <objeto-component v-for="wrapper in objetosFiltrados" 
           class="objeto"
-          :key="index"
-          :objeto="linha"
-          @editar="editarObjeto(indexAtual, index)"
-          @remover="removerObjeto(indexAtual, index)" />
+          :key="wrapper.id"
+          :objeto="wrapper.obj"
+          @editar="editarObjeto(indexAtual, wrapper.id)"
+          @remover="removerObjeto(indexAtual, wrapper.id)" />
       </div>
     </div>
 
@@ -85,6 +86,8 @@ export default {
       conjuntos: null,
       conjuntosParsed: null,
 
+      filtro: '',
+
       editorAberto: true,
       editorTitulo: 'Nada selecionado',
       editorTexto: '',
@@ -103,7 +106,22 @@ export default {
         return this.conjuntosParsed[this.indexAtual]
       }
       return null
-    }
+    },
+    objetosFiltrados () {
+      const filtro = this.filtro
+      const objetos = this.conjunto.objetos
+      const parsed = this.conjuntoParsed.objetos
+      const resultado = []
+      for (let i=0; i<objetos.length; ++i) {
+        if (objetos[i].includes(filtro)) {
+          resultado.push({
+            id: i,
+            obj: parsed[i],
+          })
+        }
+      }
+      return resultado
+    },
   },
   methods: {
     setIndexAtual (index) {
