@@ -39,7 +39,7 @@ const routes = [
     path: '/sobre',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('src/pages/Configuracoes.vue') }
+      { path: '', component: () => import('src/pages/Sobre.vue') }
     ]
   },
 
