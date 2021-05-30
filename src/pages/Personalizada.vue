@@ -6,7 +6,14 @@
         <input v-model="filtroSolucao"
           class="filtro" 
           placeholder="filtrar vetores" />
-        <input v-model="agrupamento" />
+        <button v-for="(i, index) in agrupamento" :key="i"
+            :id="index"
+            draggable="true"
+            @dragstart="agrupamentoDragstart"
+            @drop="agrupamentoDrop"
+            @dragover="agrupamentoDragover">
+          {{conjuntos[i].descricao.nome}}
+        </button>
       </div>
 
       <div class="painel">
@@ -16,12 +23,14 @@
         <div class="info">
           <span>{{personalizadaI ? personalizadaI.length : 0}} vetores</span>
         </div>
-        <span class="erro" v-if="!valida">Solução inválida</span>
+        <div v-if="!valida" class="erro">
+          <span>{{erro}}</span>
+        </div>
       </div>
 
       <grafico-component v-if="personalizadaVetores"
         class="grafico"
-        :agrupamento="JSON.parse(agrupamento)"
+        :agrupamento="agrupamento"
         :vetores="personalizadaVetores" />
     </div>
 
@@ -32,10 +41,12 @@
 
       <div class="vetores">
         <div v-for="objeto in vetoresRelevantes" 
-            :key="objeto.origem" 
+            :key="objeto.origem"
             class="flex no-wrap q-px-sm" 
             style="align-items: center;">
-          <input type="checkbox" :value="objeto.origem" v-model="personalizadaI" />
+          <input type="checkbox" 
+            :checked="personalizadaI.includes(objeto.origem)"
+            @click="(e) => vetorCheck(e, objeto.origem)" />
           <vetor-component :vetor="objeto.v" class="vetor" />
         </div>
       </div>
@@ -50,6 +61,7 @@ import * as PersonalizadaDAO from 'src/lib/DAO/personalizadaDAO.js'
 
 import * as Conjuntos from 'src/lib/conjuntos.js'
 import * as Vetores from 'src/lib/vetores.js'
+import * as Obrigatoriedades from 'src/lib/obrigatoriedades.js'
 import * as Solucao from 'src/lib/solucao.js'
 
 import GraficoComponent from 'src/components/Grafico.vue'
@@ -66,14 +78,16 @@ export default {
     return {
       conjuntos: null,
       vetores: null,
+      obrigatoriedades: null,
 
       personalizadaI: [],
       personalizadaVetores: [],
       personalizadaP: null,
       valida: null,
+      erro: null,
 
       filtroSolucao: '',
-      agrupamento: '[0, 1, 2]',
+      agrupamento: [],
       filtroVetores: '',
     }
   },
@@ -103,23 +117,56 @@ export default {
   },
   watch: {
     personalizadaI () {
-      async function construir (i, vetores, conjuntos) {
+      async function construir (i, obrigatoriedades, vetores, conjuntos) {
         const nova = {i: i}
         nova.compilada = await Solucao.compilar(nova, vetores)
         nova.p = await Solucao.pontuarSolucao(nova, vetores, conjuntos)
         nova.vetores = await Solucao.linkar(nova, vetores)
 
-        const valida = Solucao.filtrarSolucao(nova, vetores, conjuntos)
+        let valida = Solucao.filtrarSolucao(nova, vetores, conjuntos)
+        if (valida.valor) {
+          valida = await Obrigatoriedades.filtrar(nova, obrigatoriedades)
+        }
 
         return [nova, valida]
       }
 
-      construir(this.personalizadaI, this.vetores, this.conjuntos)
+      construir(this.personalizadaI, this.obrigatoriedades, this.vetores, this.conjuntos)
       .then(s => {
         this.personalizadaP = s[0].p
         this.personalizadaVetores = s[0].vetores
-        this.valida = s[1]
+        this.valida = s[1].valor
+        this.erro = s[1].erro
       })
+    },
+  },
+  methods: {
+    vetorCheck (ev, index) {
+      const i = this.personalizadaI
+      let o = 0
+      while (o < i.length && i[o] < index) ++o
+      if (ev.target.checked) {
+        i.splice(o, 0, index)
+      } else {
+        i.splice(o, 1)
+      }
+    },
+    agrupamentoDragstart (ev) {
+      ev.dataTransfer.setData('text', ev.target.id)
+    },
+    agrupamentoDrop (event) {
+      event.preventDefault()
+      const origem = event.dataTransfer.getData("text")
+      const destino = event.target.id
+
+      const agrup = this.agrupamento.slice()
+      const temp = agrup[origem]
+      agrup[origem] = agrup[destino]
+      agrup[destino] = temp
+      this.agrupamento = agrup
+    },
+    agrupamentoDragover (ev) {
+      ev.preventDefault()
     },
   },
   mounted () {
@@ -131,19 +178,28 @@ export default {
       .then(vetores => Vetores.compilar(vetores, conjuntos))
       .then(vetores => Vetores.linkar(vetores, conjuntos))
 
+      const obrigatoriedades = await Vetores.gerarObrigatoriedades(vetores, conjuntos)
+
       const personalizada = await PersonalizadaDAO.get()
       personalizada.vetores = await Solucao.linkar(personalizada, vetores)
 
-      return [conjuntos, vetores, personalizada]
+      return [conjuntos, vetores, obrigatoriedades, personalizada]
     }
     
     carregar()
     .then(a => {
       this.conjuntos = a[0]
       this.vetores = a[1]
-      this.personalizadaI = a[2].i
-      this.personalizadaP = a[2].p
-      this.personalizadaVetores = a[2].vetores
+      this.obrigatoriedades = a[2]
+      this.personalizadaI = a[3].i
+      this.personalizadaP = a[3].p
+      this.personalizadaVetores = a[3].vetores
+
+      const agrup = []
+      for (let i=0; i<a[0].length; ++i) {
+        agrup.push(i)
+      }
+      this.agrupamento = agrup
     })
   }
 }
