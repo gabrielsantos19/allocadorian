@@ -3,6 +3,7 @@
     <div class="solucao">
       <div class="menu">
         <span class="titulo">Personalizada</span>
+        <button @click="limpar">Limpar</button>
         <input v-model="filtroSolucao"
           class="filtro" 
           placeholder="filtrar vetores" />
@@ -31,7 +32,7 @@
       <grafico-component v-if="personalizadaVetores"
         class="grafico"
         :agrupamento="agrupamento"
-        :vetores="personalizadaVetores" />
+        :vetores="solucaoRelevantes" />
     </div>
 
     <div class="coluna-vetores">
@@ -40,13 +41,13 @@
       </div>
 
       <div class="vetores">
-        <div v-for="objeto in vetoresRelevantes" 
+        <div v-for="objeto in vetoresRelevantesSliced" 
             :key="objeto.origem"
             class="flex no-wrap q-px-sm" 
-            style="align-items: center;">
+            style="align-items: center;"
+            @click="vetorCheck(objeto.origem)">
           <input type="checkbox" 
-            :checked="personalizadaI.includes(objeto.origem)"
-            @click="(e) => vetorCheck(e, objeto.origem)" />
+            :checked="personalizadaI.includes(objeto.origem)" />
           <vetor-component :vetor="objeto.v" class="vetor" />
         </div>
       </div>
@@ -69,7 +70,7 @@ import VetorComponent from 'src/components/Vetor.vue'
 
 
 export default {
-  name: 'Personalizada',
+  name: 'PersonalizadaView',
   components: {
     GraficoComponent,
     VetorComponent
@@ -88,28 +89,41 @@ export default {
 
       filtroSolucao: '',
       agrupamento: [],
+
       filtroVetores: '',
+      vetoresRelevantesLimite: 25,
     }
   },
   computed: {
     vetoresRelevantes () {
       const vetores = this.vetores
       const filtroVetores = this.filtroVetores
-      
-      const limite = 50
       const resultado = []
 
       if (vetores) {
-        let i=0
-        while (i<vetores.length && resultado.length < limite) {
+        for (let i=0; i<vetores.length; ++i) {
           const vetor = vetores[i]
-          if (JSON.stringify(vetor).includes(filtroVetores)) {
+          if (vetor.string.includes(filtroVetores)) {
             resultado.push({
               origem: i,
               v: vetor
             })
           }
-          ++i
+        }
+      }
+      return resultado
+    },
+    vetoresRelevantesSliced () {
+      return this.vetoresRelevantes.slice(0, this.vetoresRelevantesLimite)
+    },
+    solucaoRelevantes () {
+      const vetores = this.personalizadaVetores
+      const filtroSolucao = this.filtroSolucao
+      const resultado = []
+      for (let i=0; i<vetores.length; ++i) {
+        const vetor = vetores[i]
+        if (vetor.string.includes(filtroSolucao)) {
+          resultado.push(vetor)
         }
       }
       return resultado
@@ -137,20 +151,28 @@ export default {
         this.personalizadaVetores = s[0].vetores
         this.valida = s[1].valor
         this.erro = s[1].erro
+        PersonalizadaDAO.post({
+          i: this.personalizadaI,
+          p: s[0].p,
+        })
       })
     },
   },
   methods: {
-    vetorCheck (ev, index) {
+    vetorCheck (index) {
       const i = this.personalizadaI
       let o = 0
       while (o < i.length && i[o] < index) ++o
-      if (ev.target.checked) {
-        i.splice(o, 0, index)
-      } else {
+      if (i[o] == index) {
         i.splice(o, 1)
+      } else {
+        i.splice(o, 0, index)
       }
     },
+    limpar () {
+      this.personalizadaI = []
+    },
+
     agrupamentoDragstart (ev) {
       ev.dataTransfer.setData('text', ev.target.id)
     },
@@ -168,38 +190,49 @@ export default {
     agrupamentoDragover (ev) {
       ev.preventDefault()
     },
+
+    carregarVetores () {
+      VetoresDAO.get()
+      .then(vetores => Vetores.compilar(vetores, this.conjuntos))
+      .then(vetores => Vetores.linkar(vetores, this.conjuntos))
+      .then(vetores => {
+        for (let i=0; i<vetores.length; ++i) {
+          vetores[i].string = JSON.stringify(vetores[i].objetos)
+        }
+        this.vetores = vetores
+
+        this.carregarObrigatoriedades()
+        this.carregarPersonalizada()
+      })
+    },
+    carregarObrigatoriedades () {
+      Vetores.gerarObrigatoriedades(this.vetores, this.conjuntos)
+      .then(os => this.obrigatoriedades = os)
+    },
+    carregarPersonalizada () {
+      PersonalizadaDAO.get()
+      .then(p => {
+        this.personalizadaI = p.i
+        this.personalizadaP = p.p
+        Solucao.linkar(p, this.vetores)
+      })
+      .then(link => {
+        this.personalizadaVetores = link
+      })
+    }
   },
   mounted () {
-    async function carregar () {
-      const conjuntos = await ConjuntosDAO.get()
-      .then(conjuntos => Conjuntos.parse(conjuntos))
-
-      const vetores = await VetoresDAO.get()
-      .then(vetores => Vetores.compilar(vetores, conjuntos))
-      .then(vetores => Vetores.linkar(vetores, conjuntos))
-
-      const obrigatoriedades = await Vetores.gerarObrigatoriedades(vetores, conjuntos)
-
-      const personalizada = await PersonalizadaDAO.get()
-      personalizada.vetores = await Solucao.linkar(personalizada, vetores)
-
-      return [conjuntos, vetores, obrigatoriedades, personalizada]
-    }
-    
-    carregar()
-    .then(a => {
-      this.conjuntos = a[0]
-      this.vetores = a[1]
-      this.obrigatoriedades = a[2]
-      this.personalizadaI = a[3].i
-      this.personalizadaP = a[3].p
-      this.personalizadaVetores = a[3].vetores
+    ConjuntosDAO.get()
+    .then(conjuntos => Conjuntos.parse(conjuntos))
+    .then(conjuntos => {
+      this.conjuntos = conjuntos
 
       const agrup = []
-      for (let i=0; i<a[0].length; ++i) {
+      for (let i=0; i<conjuntos.length; ++i) {
         agrup.push(i)
       }
       this.agrupamento = agrup
+      this.carregarVetores()
     })
   }
 }
@@ -241,12 +274,10 @@ export default {
 }
 
 .painel {
-  position: absolute;
-  top: 45px;
-  left: 10px;
   display: flex;
   flex-flow: row;
   color: white;
+  padding: 3px 10px;
 }
 .info {
   margin-right: 5px;
@@ -266,7 +297,6 @@ export default {
   flex-direction: row;
   justify-content: center;
   overflow: auto;
-  padding-top: 50px;
 }
 
 .coluna-vetores {
