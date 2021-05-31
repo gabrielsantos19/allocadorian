@@ -7,6 +7,9 @@
       <button @click="gerar()">
         Gerar soluções
       </button>
+      <button @click="limpar">
+        Limpar
+      </button>
       <input class="filtro" placeholder="filtrar soluções" />
       <div>
         {{vetores ? vetores.length : '0'}} vetores carregados; 
@@ -70,6 +73,10 @@ export default {
           this.tSolucoes = performance.now() - t0
         })
       }
+    },
+    limpar () {
+      this.solucoes = null
+      SolucoesDAO.apagar()
     },
   },
   mounted () {
