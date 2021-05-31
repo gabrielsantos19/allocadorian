@@ -5,17 +5,17 @@
         Allocadorian
       </div>
       <div class="menu">
-        <router-link to="/personalizada" tag="button">
-          Personalizada
-        </router-link>
-        <router-link to="/" tag="button">
-          Soluções
+        <router-link to="/conjuntos" tag="button">
+          Conjuntos
         </router-link>
         <router-link to="/vetores" tag="button">
           Vetores
         </router-link>
-        <router-link to="/conjuntos" tag="button">
-          Conjuntos
+        <router-link to="/" tag="button">
+          Soluções
+        </router-link>
+        <router-link to="/personalizada" tag="button">
+          Personalizada
         </router-link>
         
         <router-link to="/configuracoes" tag="button">
