@@ -76,8 +76,8 @@ export default {
       })
     },
     limpar () {
-      this.vetores = []
-      VetoresDAO.post([])
+      this.vetores = null
+      VetoresDAO.apagar()
     },
 
     carregarVetores () {
