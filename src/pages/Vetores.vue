@@ -7,6 +7,9 @@
       <div>
         <button @click="gerar()">Gerar vetores</button>
       </div>
+      <div>
+        <button @click="limpar">Limpar</button>
+      </div>
       <input class="filtro" placeholder="filtrar vetores"/>
       <div>
         <span>
@@ -71,6 +74,10 @@ export default {
           this.vetoresTime = performance.now() - t0
         })
       })
+    },
+    limpar () {
+      this.vetores = []
+      VetoresDAO.post([])
     },
   },
   mounted () {
