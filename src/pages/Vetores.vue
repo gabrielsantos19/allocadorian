@@ -79,21 +79,19 @@ export default {
       this.vetores = []
       VetoresDAO.post([])
     },
+
+    carregarVetores () {
+      VetoresDAO.get()
+      .then(vetores => Vetores.linkar(vetores, this.conjuntos))
+      .then(vetores => this.vetores = vetores)
+    },
   },
   mounted () {
-    async function carregar () {
-      const conjuntos = await ConjuntosDAO.get()
-      .then(conjuntos => Conjuntos.parse(conjuntos))
-
-      const vetores = await VetoresDAO.get()
-      .then(vetores => Vetores.linkar(vetores, conjuntos))
-
-      return [conjuntos, vetores]
-    }
-
-    carregar().then(a => {
-      this.conjuntos = a[0]
-      this.vetores = a[1]
+    ConjuntosDAO.get()
+    .then(conjuntos => Conjuntos.parse(conjuntos))
+    .then(conjuntos => {
+      this.conjuntos = conjuntos
+      this.carregarVetores()
     })
   }
 }
