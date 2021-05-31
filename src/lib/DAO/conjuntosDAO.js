@@ -11,3 +11,7 @@ export async function post(conjuntos) {
   const raw = JSON.stringify(conjuntos)
   localStorage.setItem('conjuntos', raw)
 }
+
+export async function apagar() {
+  localStorage.removeItem('conjuntos')
+}

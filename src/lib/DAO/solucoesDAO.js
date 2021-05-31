@@ -11,3 +11,7 @@ export async function post (solucoes) {
   const raw = JSON.stringify(solucoes, ['i', 'p'])
   localStorage.setItem('solucoes', raw)
 }
+
+export async function apagar() {
+  localStorage.removeItem('solucoes')
+}

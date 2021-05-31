@@ -11,3 +11,7 @@ export async function post (vetores) {
   const raw = JSON.stringify(vetores, ['i', 'p'])
   localStorage.setItem('vetores', raw)
 }
+
+export async function apagar() {
+  localStorage.removeItem('vetores')
+}
