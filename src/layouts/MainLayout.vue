@@ -5,13 +5,13 @@
         Allocadorian
       </div>
       <div class="menu">
-        <router-link to="/conjuntos" tag="button">
+        <router-link to="/" tag="button">
           Conjuntos
         </router-link>
         <router-link to="/vetores" tag="button">
           Vetores
         </router-link>
-        <router-link to="/" tag="button">
+        <router-link to="/solucoes" tag="button">
           Soluções
         </router-link>
         <router-link to="/personalizada" tag="button">

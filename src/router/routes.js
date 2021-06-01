@@ -1,17 +1,10 @@
 
 const routes = [
   {
-    path: '/personalizada',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [
-      { path: '', component: () => import('src/pages/Personalizada.vue') }
-    ]
-  },
-  {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('src/pages/Solucoes.vue') }
+      { path: '', component: () => import('src/pages/Conjuntos.vue') }
     ]
   },
   {
@@ -22,10 +15,17 @@ const routes = [
     ]
   },
   {
-    path: '/conjuntos',
+    path: '/solucoes',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('src/pages/Conjuntos.vue') }
+      { path: '', component: () => import('src/pages/Solucoes.vue') }
+    ]
+  },
+  {
+    path: '/personalizada',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('src/pages/Personalizada.vue') }
     ]
   },
   {
