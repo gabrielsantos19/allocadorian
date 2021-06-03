@@ -8,7 +8,7 @@
       <input
         class="filtro" 
         placeholder="filtrar vetores" />
-
+      <span>Agrupamento</span>
       <button v-for="(i, index) in agrupamento" :key="i"
           :id="index"
           draggable="true"
