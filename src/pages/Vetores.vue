@@ -10,7 +10,7 @@
       <div>
         <button @click="limpar">Limpar</button>
       </div>
-      <input class="filtro" placeholder="filtrar vetores"/>
+      <input v-model="filtro" class="filtro" placeholder="filtrar vetores"/>
       <div>
         <span>
           {{conjuntos ? conjuntos.length : 0}} conjuntos carregados
@@ -23,7 +23,9 @@
         </span>
       </div>
     </div>
-    <div v-if="vetores" class="vetores">
+    <div v-if="vetores" class="vetores" 
+        ref="vetores"
+        @scroll="vetoresScroll">
       <div v-for="(vetor, index) in sliced" :key="index">
         <vetor-component :vetor="vetor" class="vetor" />
       </div>
@@ -42,7 +44,7 @@ import VetorComponent from 'src/components/Vetor.vue'
 
 
 export default {
-  name: 'Vetores',
+  name: 'VetoresView',
   components: {
     VetorComponent
   },
@@ -51,17 +53,34 @@ export default {
       conjuntos: null,
       vetores: null,
       vetoresTime: null,
+
+      filtro: '',
+      limite: 10,
     }
   },
   computed: {
     sliced () {
-      if (this.vetores)
-        return this.vetores.slice(0, 100)
-      else
-        return []
-    }
+      return this.filtrados.slice(0, this.limite)
+    },
+    filtrados () {
+      const valor = this.filtro
+      const vetores = this.vetores
+      const resultado = []
+      for (let i=0; i<vetores.length; ++i) {
+        if (vetores[i].string.includes(valor)) {
+          resultado.push(vetores[i])
+        }
+      }
+      return resultado
+    },
   },
   methods: {
+    vetoresScroll (ev) {
+      const target = ev.target
+      if (target.scrollHeight == target.scrollTop + target.clientHeight) {
+        this.limite = this.limite + 30
+      }
+    },
     gerar () {
       const t0 = performance.now()
       Vetores.cartesiano(this.conjuntos)
@@ -80,19 +99,35 @@ export default {
       VetoresDAO.apagar()
     },
 
+    carregarConjuntos() {
+      ConjuntosDAO.get()
+      .then(conjuntos => Conjuntos.parse(conjuntos))
+      .then(conjuntos => {
+        this.conjuntos = conjuntos
+        this.carregarVetores()
+      })
+    },
     carregarVetores () {
       VetoresDAO.get()
       .then(vetores => Vetores.linkar(vetores, this.conjuntos))
-      .then(vetores => this.vetores = vetores)
+      .then(vetores => {
+        for (let i=0; i<vetores.length; ++i) {
+          vetores[i].string = JSON.stringify(vetores[i].objetos)
+        }
+        this.vetores = vetores
+      })
     },
   },
   mounted () {
-    ConjuntosDAO.get()
-    .then(conjuntos => Conjuntos.parse(conjuntos))
-    .then(conjuntos => {
-      this.conjuntos = conjuntos
-      this.carregarVetores()
-    })
+    this.carregarConjuntos()
+  },
+  updated () {
+    const target = this.$refs.vetores
+    if (target
+    && target.scrollHeight == target.scrollTop + target.clientHeight
+    && this.vetores.length > this.limite) {
+      this.limite = this.limite + 20
+    }
   }
 }
 </script>
@@ -132,7 +167,7 @@ export default {
   flex-wrap: wrap;
   overflow: auto;
   padding-top: 10px;
-  padding-bottom: 300px;
+  padding-bottom: 10px;
 }
 .vetor {
   margin: 0px 10px 5px 10px;
