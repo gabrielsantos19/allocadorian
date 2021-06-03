@@ -18,7 +18,8 @@
           Personalizada
         </router-link>
         
-        <router-link to="/configuracoes" tag="button">
+        <router-link to="/configuracoes" tag="button"
+            style="margin-left: 5px;">
           Configurações
         </router-link>
         <router-link to="/sobre" tag="button">

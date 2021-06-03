@@ -1,14 +1,15 @@
 <template>
   <div class="container">
     <div class="solucao">
-      <div class="menu">
-        <span class="titulo">Personalizada</span>
-        <button @click="limpar">Limpar</button>
+      <div class="barra">
+        <span class="barra-h1">Personalizada</span>
+        <button class="barra-opcao" @click="limpar">Limpar</button>
         <input v-model="solucaoFiltro"
-          class="filtro" 
+          class="barra-filtro" 
           placeholder="filtrar solução" />
-        <span v-if="agrupamento.length > 0">Agrupamento</span>
+        <span class="barra-h2" v-if="agrupamento.length > 0">Agrupamento</span>
         <button v-for="(i, index) in agrupamento" :key="i"
+            class="barra-opcao"
             :id="index"
             draggable="true"
             @dragstart="agrupamentoDragstart"
@@ -272,25 +273,34 @@ export default {
   flex-flow: column nowrap;
   flex-grow: 1;
 }
-.menu {
+
+.barra {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
   color: white;
-  min-height: 42px;
-  max-height: 42px;
   flex-shrink: 0;
+  overflow: auto;
   background-color: rgb(40,40,40);
 }
-.titulo {
-  font-size: 22px;
-  padding: 0px 15px 0px 15px;
-  overflow: hidden;
+.barra-h1 {
+  font-size: 23px;
+  padding: 0px 15px;
 }
-.filtro {
+.barra-h2 {
+  font-size: 18px;
+  padding: 0px 10px;
+}
+.barra-opcao {
+  flex-shrink: 0;
+  margin: 6px 0px;
+  min-height: 30px;
+}
+.barra-filtro {
   flex-grow: 1;
   max-width: 500px;
+  min-height: 30px;
   margin: 0px 10px;
 }
 

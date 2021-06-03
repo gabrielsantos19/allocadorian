@@ -1,15 +1,18 @@
 <template>
   <div class="solucao">
     <div class="barra">
-      <span class="titulo">Solução</span>
-      <button @click="personalizar">
+      <span class="barra-h1">Solução</span>
+      <button class="barra-opcao" @click="personalizar">
         Personalizar
       </button>
       <input
-        class="filtro" 
+        class="barra-filtro" 
         placeholder="filtrar vetores" />
-      <span>Agrupamento</span>
+      <span class="barra-h2">
+        Agrupamento
+      </span>
       <button v-for="(i, index) in agrupamento" :key="i"
+          class="barra-opcao"
           :id="index"
           draggable="true"
           @dragstart="agrupamentoDragstart"
@@ -124,22 +127,37 @@ export default {
   flex-flow: column nowrap;
   overflow: auto;
 }
+
 .barra {
   display: flex;
-  flex-flow: row nowrap;
-  flex-grow: 1;
-  min-height: 42px;
+  flex-direction: row;
+  flex-wrap: nowrap;
   align-items: center;
   color: white;
-  background-color: rgb(40,40,40);
-  overflow: auto;
-}
-.titulo {
   flex-shrink: 0;
-  font-size: 22px;
-  padding: 0px 15px 0px 15px;
-  overflow: hidden;
+  overflow: auto;
+  background-color: rgb(40,40,40);
 }
+.barra-h1 {
+  font-size: 23px;
+  padding: 0px 15px;
+}
+.barra-h2 {
+  font-size: 18px;
+  padding: 0px 10px;
+}
+.barra-opcao {
+  flex-shrink: 0;
+  margin: 6px 0px;
+  min-height: 30px;
+}
+.barra-filtro {
+  flex-grow: 1;
+  max-width: 500px;
+  min-height: 30px;
+  margin: 0px 10px;
+}
+
 .filtro {
   flex-grow: 1;
   max-width: 500px;

@@ -2,20 +2,23 @@
   <main class="row no-wrap col" style="overflow: auto;">
     <div class="conjuntos">
       <div class="barra">
-        <span>Conjuntos</span>
+        <span class="barra-h1">Conjuntos</span>
         <div v-for="(c, index) in conjuntosParsed"
             :key="index">
-          <button @click="setIndexAtual(index)">
+          <button class="barra-opcao"
+              @click="setIndexAtual(index)">
             {{ c.descricao.nome }}
           </button>
         </div>
-        <button @click="criarConjunto">
-          Novo conjunto
+        <button class="barra-opcao"
+            style="margin-left: 5px;"
+            @click="criarConjunto">
+          Adicionar conjunto
         </button>
       </div>
 
       <div v-if="conjuntoParsed" class="cabecalho">
-        <div style="font-size: 55px" class="q-px-md">
+        <div class="conjunto-nome">
           {{conjuntoParsed.descricao.nome}}
         </div>
         <div class="column">
@@ -24,7 +27,7 @@
           </div>
           <div class="row">
             <button @click="criarObjeto(indexAtual)">
-              Novo objeto
+              Adicionar objeto
             </button>
             <button @click="editarObjetoBase(indexAtual)">
               Editar objeto base
@@ -52,9 +55,17 @@
 
     <div v-if="editorAberto" class="editor">
       <div class="barra">
-        <button @click="editorSalvar(editorTexto)">Salvar</button>
-        <button @click="cancelarEdicao">Cancelar</button>
-        <span>{{editorTitulo}}</span>
+        <button class="barra-opcao"
+            @click="editorSalvar(editorTexto)">
+          Salvar
+        </button>
+        <button class="barra-opcao"
+            @click="cancelarEdicao">
+          Cancelar
+        </button>
+        <span style="margin-left: 5px; overflow: hidden;">
+          {{editorTitulo}}
+        </span>
       </div>
       <div class="column col">
         <textarea v-model="editorTexto" class="col" style="resize: none;" />
@@ -236,16 +247,25 @@ export default {
   flex-grow: 1;
   min-width: 400px;
 }
+
 .barra {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
   color: white;
-  min-height: 42px;
-  max-height: 42px;
   flex-shrink: 0;
+  overflow: auto;
   background-color: rgb(40,40,40);
+}
+.barra-h1 {
+  font-size: 23px;
+  padding: 0px 15px;
+}
+.barra-opcao {
+  flex-shrink: 0;
+  margin: 6px 0px;
+  min-height: 30px;
 }
 
 .cabecalho {
@@ -253,6 +273,13 @@ export default {
   flex-flow: row wrap;
   align-items: center;
   padding-bottom: 10px;
+}
+.conjunto-nome {
+  font-size: 55px;
+  padding: 0px 20px;
+  width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .objetos {

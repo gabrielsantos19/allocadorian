@@ -1,17 +1,17 @@
 <template>
   <main class="column no-wrap" style="overflow: auto;">
-    <div class="menu">
-      <span class="titulo">
+    <div class="barra">
+      <span class="barra-h1">
         Soluções
       </span>
-      <button @click="gerar()">
+      <button class="barra-opcao" @click="gerar()">
         Gerar soluções
       </button>
-      <button @click="limpar">
+      <button class="barra-opcao" @click="limpar">
         Limpar
       </button>
-      <input class="filtro" placeholder="filtrar soluções" />
-      <div>
+      <input class="barra-filtro" placeholder="filtrar soluções" />
+      <div style="white-space: nowrap;">
         {{vetores ? vetores.length : '0'}} vetores carregados; 
         {{solucoes ? solucoes.length : '0'}} solucoes
         {{tSolucoes ? `em ${tSolucoes}ms` : ''}}
@@ -103,27 +103,37 @@ export default {
 </script>
 
 <style scoped>
-.menu {
+.barra {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
   color: white;
-  min-height: 42px;
-  max-height: 42px;
   flex-shrink: 0;
+  overflow: auto;
   background-color: rgb(40,40,40);
+  
 }
-.titulo {
-  font-size: 22px;
-  padding: 0px 15px 0px 15px;
-  overflow: hidden;
+.barra-h1 {
+  font-size: 23px;
+  padding: 0px 15px;
 }
-.filtro {
+.barra-h2 {
+  font-size: 18px;
+  padding: 0px 10px;
+}
+.barra-opcao {
+  flex-shrink: 0;
+  margin: 6px 0px;
+  min-height: 30px;
+}
+.barra-filtro {
   flex-grow: 1;
   max-width: 500px;
+  min-height: 30px;
   margin: 0px 10px;
 }
+
 .solucoes {
   display: flex;
   flex-direction: row;

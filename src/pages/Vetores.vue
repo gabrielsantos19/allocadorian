@@ -1,17 +1,15 @@
 <template>
   <main class="container">
-    <div class="menu">
-      <span class="titulo">
+    <div class="barra">
+      <span class="barra-h1">
         Vetores
       </span>
-      <div>
-        <button @click="gerar()">Gerar vetores</button>
-      </div>
-      <div>
-        <button @click="limpar">Limpar</button>
-      </div>
-      <input v-model="filtro" class="filtro" placeholder="filtrar vetores"/>
-      <div>
+      <button class="barra-opcao"
+        @click="gerar()">Gerar vetores</button>
+      <button class="barra-opcao" 
+        @click="limpar">Limpar</button>
+      <input v-model="filtro" class="barra-filtro" placeholder="filtrar vetores"/>
+      <div style="white-space: nowrap;">
         <span>
           {{conjuntos ? conjuntos.length : 0}} conjuntos carregados
         </span>
@@ -139,28 +137,37 @@ export default {
   flex-wrap: nowrap;
   overflow: auto;
 }
-.menu {
+
+.barra {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
   color: white;
-  min-height: 42px;
-  max-height: 42px;
   flex-shrink: 0;
+  overflow: auto;
   background-color: rgb(40,40,40);
 }
-.titulo {
-  flex-shrink: 0;
-  font-size: 22px;
-  padding: 0px 15px 0px 15px;
-  overflow: hidden;
+.barra-h1 {
+  font-size: 23px;
+  padding: 0px 15px;
 }
-.filtro {
+.barra-h2 {
+  font-size: 18px;
+  padding: 0px 10px;
+}
+.barra-opcao {
+  flex-shrink: 0;
+  margin: 6px 0px;
+  min-height: 30px;
+}
+.barra-filtro {
   flex-grow: 1;
   max-width: 500px;
+  min-height: 30px;
   margin: 0px 10px;
 }
+
 .vetores {
   display: flex;
   flex-direction: row;
