@@ -6,6 +6,7 @@
         Personalizar
       </button>
       <input
+        v-model="solucaoFiltro"
         class="barra-filtro" 
         placeholder="filtrar vetores" />
       <span class="barra-h2">
@@ -24,7 +25,7 @@
 
     <grafico-component v-if="solucao"
       :agrupamento="agrupamento"
-      :vetores="solucao.vetores" 
+      :vetores="solucaoFiltrados" 
       class="grafico"/>
   </div>
 </template>
@@ -43,27 +44,73 @@ import GraficoComponent from 'src/components/Grafico.vue'
 
 
 export default {
-  name: 'Solucao',
+  name: 'SolucaoView',
   components: {
     GraficoComponent
   },
   data () {
     return {
-      solucao: null,
       solucaoId: null,
 
       conjuntos: null,
       vetores: null,
       solucoes: null,
 
+      solucaoFiltro: '',
       agrupamento: null,
     }
+  },
+  computed: {
+    solucao () {
+      const solucoes = this.solucoes
+      const id = this.solucaoId
+      if (solucoes && id && solucoes.length > id) {
+        return solucoes[id]
+      } else {
+        return null
+      }
+    },
+    solucaoFiltrados () {
+      const filtro = this.solucaoFiltro
+      const solucao = this.solucao
+      let vetores = []
+      if (solucao) {
+        vetores = solucao.vetores
+      }
+      
+      const resultado = []
+        for (let i=0; i<vetores.length; ++i) {
+          const vetor = vetores[i]
+          if (vetor.string.includes(filtro)) {
+            resultado.push(vetor)
+          }
+        }
+      return resultado
+    },
+  },
+  watch: {
+    conjuntos () {
+      VetoresDAO.get()
+      .then(vetores => Vetores.linkar(vetores, this.conjuntos))
+      .then(vetores => {
+        for (let i=0; i<vetores.length; ++i) {
+          vetores[i].string = JSON.stringify(vetores[i].objetos)
+        }
+        this.vetores = vetores
+      })
+    },
+    vetores () {
+      SolucoesDAO.get()
+      .then(solucoes => Solucoes.linkar(solucoes, this.vetores))
+      .then(solucoes => this.solucoes = solucoes)
+    },
   },
   methods: {
     personalizar () {
       PersonalizadaDAO.post(this.solucao)
       .then(this.$router.push('/personalizada'))
     },
+
     agrupamentoDragstart (ev) {
       ev.dataTransfer.setData('text', ev.target.id)
     },
@@ -83,39 +130,21 @@ export default {
     },
   },
   mounted () {
-    const id = this.$route.query.id
-    if (isNaN(id)) {
-      return
+    let id = this.$route.query.id
+    if (isNaN(id) || id < 0) {
+      id = null
     }
 
-    async function carregar () {
-      const conjuntos = await ConjuntosDAO.get()
-      .then(conjuntos => Conjuntos.parse(conjuntos))
-
-      const vetores = await VetoresDAO.get()
-      .then(vetores => Vetores.linkar(vetores, conjuntos))
-
-      const solucoes = await SolucoesDAO.get()
-      .then(solucoes => Solucoes.linkar(solucoes, vetores))
-
-      return [conjuntos, vetores, solucoes]
-    }
-    
-    carregar()
-    .then(a => {
-      this.conjuntos = a[0]
-      this.vetores = a[1]
-      this.solucoes = a[2]
-      if (id) {
-        this.solucaoId = id
-        this.solucao = a[2][id]
-      }
-
+    ConjuntosDAO.get()
+    .then(conjuntos => Conjuntos.parse(conjuntos))
+    .then(conjuntos => {
       const agrup = []
-      for (let i=0; i<a[0].length; ++i) {
+      for (let i=0; i<conjuntos.length; ++i) {
         agrup.push(i)
       }
+      this.conjuntos = conjuntos
       this.agrupamento = agrup
+      this.solucaoId = id
     })
   }
 }
