@@ -88,6 +88,9 @@ export default {
         Vetores.linkar(vetores, this.conjuntos)
         .then(linkados => {
           this.vetores = linkados
+          for (let i=0; i<vetores.length; ++i) {
+            vetores[i].string = JSON.stringify(vetores[i].objetos)
+          }
           this.vetoresTime = performance.now() - t0
         })
       })
