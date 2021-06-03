@@ -4,9 +4,10 @@
       <div class="menu">
         <span class="titulo">Personalizada</span>
         <button @click="limpar">Limpar</button>
-        <input v-model="filtroSolucao"
+        <input v-model="solucaoFiltro"
           class="filtro" 
-          placeholder="filtrar vetores" />
+          placeholder="filtrar solução" />
+        <span v-if="agrupamento.length > 0">Agrupamento</span>
         <button v-for="(i, index) in agrupamento" :key="i"
             :id="index"
             draggable="true"
@@ -32,18 +33,18 @@
       <grafico-component v-if="personalizadaVetores"
         class="grafico"
         :agrupamento="agrupamento"
-        :vetores="solucaoRelevantes" />
+        :vetores="solucaoFiltrados" />
     </div>
 
     <div class="coluna-vetores">
       <div class="filtro-vetor">
-        <input v-model="filtroVetores" />
+        <input v-model="vetoresFiltro" placeholder="filtrar vetores"/>
       </div>
 
-      <div class="vetores">
-        <div v-for="objeto in vetoresRelevantesSliced" 
+      <div class="vetores" ref="vetores" @scroll="vetoresScroll">
+        <div v-for="objeto in vetoresSliced" 
             :key="objeto.origem"
-            class="flex no-wrap q-px-sm" 
+            class="svetor" 
             style="align-items: center;"
             @click="vetorCheck(objeto.origem)">
           <input type="checkbox" 
@@ -82,28 +83,27 @@ export default {
       obrigatoriedades: null,
 
       personalizadaI: [],
-      personalizadaVetores: [],
+      personalizadaVetores: null,
       personalizadaP: null,
       valida: null,
       erro: null,
 
-      filtroSolucao: '',
+      solucaoFiltro: '',
       agrupamento: [],
 
-      filtroVetores: '',
-      vetoresRelevantesLimite: 25,
+      vetoresFiltro: '',
+      vetoresLimite: 10,
     }
   },
   computed: {
-    vetoresRelevantes () {
+    vetoresFiltrados () {
+      const filtro = this.vetoresFiltro
       const vetores = this.vetores
-      const filtroVetores = this.filtroVetores
       const resultado = []
-
       if (vetores) {
         for (let i=0; i<vetores.length; ++i) {
           const vetor = vetores[i]
-          if (vetor.string.includes(filtroVetores)) {
+          if (vetor.string.includes(filtro)) {
             resultado.push({
               origem: i,
               v: vetor
@@ -113,24 +113,48 @@ export default {
       }
       return resultado
     },
-    vetoresRelevantesSliced () {
-      return this.vetoresRelevantes.slice(0, this.vetoresRelevantesLimite)
+    vetoresSliced () {
+      return this.vetoresFiltrados.slice(0, this.vetoresLimite)
     },
-    solucaoRelevantes () {
+    solucaoFiltrados () {
+      const filtro = this.solucaoFiltro
       const vetores = this.personalizadaVetores
-      const filtroSolucao = this.filtroSolucao
       const resultado = []
-      for (let i=0; i<vetores.length; ++i) {
-        const vetor = vetores[i]
-        if (vetor.string.includes(filtroSolucao)) {
+      if (vetores) {
+        for (let i=0; i<vetores.length; ++i) {
+          const vetor = vetores[i]
+        if (vetor.string.includes(filtro)) {
           resultado.push(vetor)
+          }
         }
       }
       return resultado
     },
   },
-  watch: {
-    personalizadaI () {
+  methods: {
+    vetorCheck (index) {
+      const i = this.personalizadaI
+      let o = 0
+      while (o < i.length && i[o] < index) ++o
+      if (i[o] == index) {
+        i.splice(o, 1)
+      } else {
+        i.splice(o, 0, index)
+      }
+      this.atualizarPersonalizada()
+    },
+    vetoresScroll (ev) {
+      const target = ev.target
+      if (target.scrollHeight <= target.scrollTop + target.clientHeight) {
+        this.vetoresLimite = this.vetoresLimite + 10
+      }
+    },
+    limpar () {
+      this.personalizadaI = []
+      PersonalizadaDAO.apagar()
+    },
+
+    atualizarPersonalizada () {
       async function construir (i, obrigatoriedades, vetores, conjuntos) {
         const nova = {i: i}
         nova.compilada = await Solucao.compilar(nova, vetores)
@@ -157,21 +181,6 @@ export default {
         })
       })
     },
-  },
-  methods: {
-    vetorCheck (index) {
-      const i = this.personalizadaI
-      let o = 0
-      while (o < i.length && i[o] < index) ++o
-      if (i[o] == index) {
-        i.splice(o, 1)
-      } else {
-        i.splice(o, 0, index)
-      }
-    },
-    limpar () {
-      this.personalizadaI = []
-    },
 
     agrupamentoDragstart (ev) {
       ev.dataTransfer.setData('text', ev.target.id)
@@ -191,6 +200,20 @@ export default {
       ev.preventDefault()
     },
 
+    carregarConjuntos () {
+      ConjuntosDAO.get()
+      .then(conjuntos => Conjuntos.parse(conjuntos))
+      .then(conjuntos => {
+        this.conjuntos = conjuntos
+
+        const agrup = []
+        for (let i=0; i<conjuntos.length; ++i) {
+          agrup.push(i)
+        }
+        this.agrupamento = agrup
+        this.carregarVetores()
+      })
+    },
     carregarVetores () {
       VetoresDAO.get()
       .then(vetores => Vetores.compilar(vetores, this.conjuntos))
@@ -214,27 +237,25 @@ export default {
       .then(p => {
         this.personalizadaI = p.i
         this.personalizadaP = p.p
-        Solucao.linkar(p, this.vetores)
+        return Solucao.linkar(p, this.vetores)
       })
       .then(link => {
         this.personalizadaVetores = link
+        this.atualizarPersonalizada()
       })
     }
   },
   mounted () {
-    ConjuntosDAO.get()
-    .then(conjuntos => Conjuntos.parse(conjuntos))
-    .then(conjuntos => {
-      this.conjuntos = conjuntos
-
-      const agrup = []
-      for (let i=0; i<conjuntos.length; ++i) {
-        agrup.push(i)
-      }
-      this.agrupamento = agrup
-      this.carregarVetores()
-    })
-  }
+    this.carregarConjuntos()
+  },
+  updated () {
+    const target = this.$refs.vetores
+    if (target
+    && target.scrollHeight <= target.scrollTop + target.clientHeight
+    && this.vetoresFiltrados.length > this.vetoresLimite) {
+      this.vetoresLimite = this.vetoresLimite + 10
+    }
+  },
 }
 </script>
 
@@ -316,8 +337,13 @@ export default {
   display: flex;
   flex-flow: column nowrap;
   flex-grow: 1;
+  padding: 0px 10px;
   overflow: auto;
   background-color: rgb(130,130,130); 
+}
+.svetor {
+  display: flex;
+  flex-flow: row nowrap;
 }
 .vetor {
   margin: 5px;
