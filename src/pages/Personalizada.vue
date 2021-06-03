@@ -21,10 +21,10 @@
 
       <div class="painel">
         <div class="info">
-          <span>{{personalizadaP}} pontos</span>
-        </div>
-        <div class="info">
           <span>{{personalizadaI ? personalizadaI.length : 0}} vetores</span>
+        </div>
+        <div v-for="(value, key) in personalizadaP" class="info" :key="key">
+          <span>{{key}}: {{value}}</span>
         </div>
         <div v-if="!valida" class="erro">
           <span>{{erro}}</span>
@@ -152,6 +152,7 @@ export default {
     },
     limpar () {
       this.personalizadaI = []
+      this.atualizarPersonalizada()
       PersonalizadaDAO.apagar()
     },
 

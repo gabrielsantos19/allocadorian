@@ -30,7 +30,7 @@ export function obrigatoriedade (objeto, base) {
 
 export function filtrarSolucao (objeto, base, solucao) {
   if (base.filtrarSolucao) {
-    const retorno = base.filtrarSolucao(objeto, solucao)
+    const retorno = base.filtrarSolucao(solucao)
     if (retorno !== undefined) {
       return {
         valor: retorno.valor,
@@ -45,11 +45,11 @@ export function filtrarSolucao (objeto, base, solucao) {
 }
 
 export function pontuarSolucao (objeto, base, solucao) {
-  let pontos = 0
+  let p = {p: 0}
   if (base.pontuarSolucao) {
-    pontos += base.pontuarSolucao(objeto, solucao)
+    p = base.pontuarSolucao(solucao)
   }
-  return pontos
+  return p
 }
 
 export function filtrarFinal (objeto, base, solucao) {

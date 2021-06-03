@@ -116,7 +116,7 @@ export async function solucao (vetores, conjuntos) {
 
 
 function sortFunction (solucao1, solucao2) {
-  return solucao2.p - solucao1.p
+  return solucao2.p.p - solucao1.p.p
 }
 
 export async function sort (solucoes) {

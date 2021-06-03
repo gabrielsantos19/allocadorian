@@ -4,7 +4,7 @@
       {{solucao.i.length}} vetores
     </div>
     <div class="pontuacao">
-      {{solucao.p}}
+      {{solucao.p.p}}
     </div>
   </div>
 </template>

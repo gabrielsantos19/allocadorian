@@ -1,10 +1,12 @@
 import * as Vetor from 'src/lib/vetor.js'
+import * as Objeto from 'src/lib/objeto.js'
 
 
 export function filtrarSolucao(solucao, vetores, conjuntos) {
-  for (let i=0; i<solucao.i.length; ++i) {
-    const vetor = vetores[solucao.i[i]]
-    const retorno = Vetor.filtrarSolucao(vetor, conjuntos, solucao.compilada)
+  for (let i=0; i<conjuntos.length; ++i) {
+    const conjunto = conjuntos[i]
+    const objetoBase = conjunto.objetoBase
+    const retorno = Objeto.filtrarSolucao(null, objetoBase, solucao)
     if (!retorno.valor) {
       return retorno
     }
@@ -16,12 +18,19 @@ export function filtrarSolucao(solucao, vetores, conjuntos) {
 }
 
 export async function pontuarSolucao(solucao, vetores, conjuntos) {
-  let pontos = 0
+  let p = {p: 0}
+
   for (let i=0; i<solucao.i.length; ++i) {
-    const vetor = vetores[solucao.i[i]]
-    pontos += Vetor.pontuarSolucao(vetor, conjuntos, solucao.compilada)
+    p.p += vetores[solucao.i[i]].p
   }
-  return pontos
+  
+  for (let i=0; i<conjuntos.length; ++i) {
+    const conjunto = conjuntos[i]
+    const base = conjunto.objetoBase
+    const novo = Objeto.pontuarSolucao(null, base, solucao)
+    somarObjetos(p, novo)
+  }
+  return p
 }
 
 export async function filtrarFinal(solucao, vetores, conjuntos) {
@@ -52,4 +61,15 @@ export async function compilar (solucao, vetores) {
     compilada.push(vetores[solucao.i[i]].compilado)
   }
   return compilada
+}
+
+function somarObjetos (objeto1, objeto2) {
+  for (let i in objeto2) {
+    if (objeto1.hasOwnProperty(i)) {
+      objeto1[i] = objeto1[i] + objeto2[i]
+    } else {
+      objeto1[i] = objeto2[i]
+    }
+  }
+  return objeto1
 }

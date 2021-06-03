@@ -23,12 +23,12 @@
       </button>
     </div>
 
-    <div class="painel">
+    <div v-if="solucao" class="painel">
       <div class="info">
         <span>{{solucao.i.length}} vetores</span>
       </div>
-      <div class="info">
-        <span>{{solucao.p}} pontos</span>
+      <div v-for="(value, key) in solucao.p" class="info" :key="key">
+        <span>{{key}}: {{value}}</span>
       </div>
     </div>
 
@@ -48,6 +48,7 @@ import * as PersonalizadaDAO from 'src/lib/DAO/personalizadaDAO.js'
 import * as Conjuntos from 'src/lib/conjuntos.js'
 import * as Vetores from 'src/lib/vetores.js'
 import * as Solucoes from 'src/lib/solucoes.js'
+import * as Solucao from 'src/lib/solucao.js'
 
 import GraficoComponent from 'src/components/Grafico.vue'
 
@@ -60,6 +61,7 @@ export default {
   data () {
     return {
       solucaoId: null,
+      solucao: null,
 
       conjuntos: null,
       vetores: null,
@@ -70,15 +72,6 @@ export default {
     }
   },
   computed: {
-    solucao () {
-      const solucoes = this.solucoes
-      const id = this.solucaoId
-      if (solucoes && id && solucoes.length > id) {
-        return solucoes[id]
-      } else {
-        return null
-      }
-    },
     solucaoFiltrados () {
       const filtro = this.solucaoFiltro
       const solucao = this.solucao
@@ -101,6 +94,7 @@ export default {
     conjuntos () {
       VetoresDAO.get()
       .then(vetores => Vetores.linkar(vetores, this.conjuntos))
+      .then(vetores => Vetores.compilar(vetores, this.conjuntos))
       .then(vetores => {
         for (let i=0; i<vetores.length; ++i) {
           vetores[i].string = JSON.stringify(vetores[i].objetos)
@@ -111,7 +105,22 @@ export default {
     vetores () {
       SolucoesDAO.get()
       .then(solucoes => Solucoes.linkar(solucoes, this.vetores))
-      .then(solucoes => this.solucoes = solucoes)
+      .then(l => this.solucoes = l)
+    },
+    solucoes () {
+      const solucoes = this.solucoes
+      const id = this.solucaoId
+      if (solucoes && id && solucoes.length > id) {
+        this.solucao = solucoes[id]
+      }
+    },
+    solucao () {
+      Solucao.compilar(this.solucao, this.vetores)
+      .then(c => {
+        this.solucao.compilada = c
+        Solucao.pontuarSolucao(this.solucao, this.vetores, this.conjuntos)
+        .then(p => this.solucao.p = p)
+      })
     },
   },
   methods: {
@@ -142,6 +151,7 @@ export default {
     let id = this.$route.query.id
     if (isNaN(id) || id < 0) {
       id = null
+      return
     }
 
     ConjuntosDAO.get()
