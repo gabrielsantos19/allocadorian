@@ -23,6 +23,15 @@
       </button>
     </div>
 
+    <div class="painel">
+      <div class="info">
+        <span>{{solucao.i.length}} vetores</span>
+      </div>
+      <div class="info">
+        <span>{{solucao.p}} pontos</span>
+      </div>
+    </div>
+
     <grafico-component v-if="solucao"
       :agrupamento="agrupamento"
       :vetores="solucaoFiltrados" 
@@ -187,12 +196,25 @@ export default {
   margin: 0px 10px;
 }
 
-.filtro {
-  flex-grow: 1;
-  max-width: 500px;
-  min-width: 100px;
-  margin: 0px 10px;
+.painel {
+  display: flex;
+  flex-flow: row;
+  color: white;
+  padding: 3px 10px;
 }
+.info {
+  margin-right: 5px;
+  padding: 5px;
+  border-radius: 7px;
+  background-color: grey;
+}
+.erro {
+  margin-right: 5px;
+  padding: 5px;
+  border-radius: 7px;
+  background-color: red;
+}
+
 .grafico {
   display: flex;
   flex-direction: row;
