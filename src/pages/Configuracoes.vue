@@ -1,26 +1,36 @@
 <template>
   <main class="container">
     <div class="column">
-      <span>MongoDB</span>
-      <div>
-        <input />
-        <button>Conectar</button>
-      </div>
+      <span class="titulo">Dados carregados</span>
+      <span>{{conjuntos.length}} conjuntos carregados</span>
+      <span>{{vetores.length}} vetores carregados</span>
+      <span>{{solucoes.length}} solucoes carregados</span>
+      <span>Personalizada com {{personalizada.i.length}} vetores</span>
       
-      <span>Arquivo</span>
+      <span class="titulo">Importar dados</span>
+      <span v-if="importarMensagem">{{importarMensagem}}</span>
       <button onclick="this.children[0].click()">
         <input id="input-importar" type="file" @change="importar" style="display: none;">
-        Importar sessão a partir de arquivo
+        Importar a partir de arquivo
       </button>
-
-      <label>Destino</label>
+      <span class="titulo">Exportar dados</span>
+      <label>Nome do arquivo</label>
       <input v-model="exportarDestino" />
-      <a :href="exportarHref"
-          :download="exportarDestino">
+      <a :href="exportarHref" :download="exportarDestino" style="display:flex; flex-direction: column;">
         <button :disabled="conjuntos == null">
-          Exportar sessão para arquivo
+          Exportar para arquivo
         </button>
       </a>
+
+      <span class="titulo">Limpar localStorage</span>
+      <button @click="deletarDados">
+        Deletar dados
+      </button>
+
+      <span class="titulo">MongoDB</span>
+      <input placeholder="url da API" />
+      <button disabled>Conectar</button>
+      <button disabled>Desconectar</button>
     </div>
   </main>
 </template>
@@ -30,18 +40,21 @@ import * as ConjuntosDAO from 'src/lib/DAO/conjuntosDAO.js'
 import * as VetoresDAO from 'src/lib/DAO/vetoresDAO.js'
 import * as SolucoesDAO from 'src/lib/DAO/solucoesDAO.js'
 import * as PersonalizadaDAO from 'src/lib/DAO/personalizadaDAO.js'
+import { solucao } from 'src/lib/solucoes'
 
 
 export default {
   name: 'ConfiguracoesView',
   data () {
     return {
-      conjuntos: null,
-      vetores: null,
-      solucoes: null,
-      personalizada: null,
+      conjuntos: [],
+      vetores: [],
+      solucoes: [],
+      personalizada: {i: []},
 
-      exportarDestino: 'allocadorian.json'
+      importarMensagem: '',
+      
+      exportarDestino: 'allocadorian.json',
     }
   },
   computed: {
@@ -59,36 +72,60 @@ export default {
   },
   methods: {
     importar (e) {
+      this.importarMensagem = 'Importanto dados'
+
       const file = document.getElementById('input-importar').files[0]
+      async function post (dados) {
+        await ConjuntosDAO.post(dados.conjuntos)
+        await VetoresDAO.post(dados.vetores)
+        await SolucoesDAO.post(dados.solucoes)
+        await PersonalizadaDAO.post(dados.personalizada)
+      }
       file.text()
       .then(raw => {
         const dados = JSON.parse(raw)
-        console.log(dados)
-
-        ConjuntosDAO.post(dados.conjuntos)
-        VetoresDAO.post(dados.vetores)
-        SolucoesDAO.post(dados.solucoes)
-        PersonalizadaDAO.post(dados.personalizada)
+        return post(dados)
       })
-    }
+      .then(r => {
+        this.importarMensagem = 'Sucesso ao importar'
+        this.carregar()
+      })
+      .catch(e => this.importarMensagem = 'Erro ao importar')
+    },
+    deletarDados () {
+      localStorage.clear()
+      this.carregar()
+    },
+
+    carregar () {
+      this.carregarConjuntos()
+      this.carregarVetores()
+      this.carregarSolucoes()
+      this.carregarPersonalizada()
+    },
+    carregarConjuntos () {
+      ConjuntosDAO.get()
+      .then(conjuntos => this.conjuntos = conjuntos)
+    },
+    carregarVetores () {
+      VetoresDAO.get()
+      .then(vetores => {
+        this.vetores = vetores
+      })
+    },
+    carregarSolucoes () {
+      SolucoesDAO.get()
+      .then(solucoes => {
+        this.solucoes = solucoes
+      })
+    },
+    carregarPersonalizada () {
+      PersonalizadaDAO.get()
+      .then(personalizada => this.personalizada = personalizada)
+    },
   },
   mounted () {
-    async function carregar () {
-      const conjuntos = await ConjuntosDAO.get()
-      const vetores = await VetoresDAO.get()
-      const solucoes = await SolucoesDAO.get()
-      const personalizada = await PersonalizadaDAO.get()
-      
-      return [conjuntos, vetores, solucoes, personalizada]
-    }
-    
-    carregar()
-    .then(a => {
-      this.conjuntos = a[0]
-      this.vetores = a[1]
-      this.solucoes = a[2]
-      this.personalizada = a[3]
-    })
+    this.carregar()
   }
 }
 </script>
@@ -98,5 +135,9 @@ export default {
   display: flex;
   flex-flow: column nowrap;
   align-items: center;
+}
+.titulo {
+  font-size: 35px;
+  margin: 10px 0px 5px 0px;
 }
 </style>
