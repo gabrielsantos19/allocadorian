@@ -8,7 +8,7 @@
       <span>Personalizada com {{personalizada.i.length}} vetores</span>
       
       <span class="titulo">Importar dados</span>
-      <span v-if="importarMensagem">{{importarMensagem}}</span>
+      <span v-if="importarMensagem" class="aviso">{{importarMensagem}}</span>
       <button onclick="this.children[0].click()">
         <input id="input-importar" type="file" @change="importar" style="display: none;">
         Importar a partir de arquivo
@@ -22,12 +22,12 @@
         </button>
       </a>
 
-      <span class="titulo">Limpar localStorage</span>
+      <span class="titulo">localStorage</span>
       <button @click="deletarDados">
-        Deletar dados
+        Limpar todos os dados
       </button>
 
-      <span class="titulo">MongoDB</span>
+      <span class="titulo">Rest API</span>
       <input placeholder="url da API" />
       <button disabled>Conectar</button>
       <button disabled>Desconectar</button>
@@ -40,7 +40,6 @@ import * as ConjuntosDAO from 'src/lib/DAO/conjuntosDAO.js'
 import * as VetoresDAO from 'src/lib/DAO/vetoresDAO.js'
 import * as SolucoesDAO from 'src/lib/DAO/solucoesDAO.js'
 import * as PersonalizadaDAO from 'src/lib/DAO/personalizadaDAO.js'
-import { solucao } from 'src/lib/solucoes'
 
 
 export default {
@@ -139,5 +138,14 @@ export default {
 .titulo {
   font-size: 35px;
   margin: 10px 0px 5px 0px;
+}
+.aviso {
+  font-size: 20px;
+  color: white;
+  text-align: center;
+  border-radius: 5px;
+  background: darkgreen;
+  padding: 5px 0px;
+  margin-bottom: 10px;
 }
 </style>
