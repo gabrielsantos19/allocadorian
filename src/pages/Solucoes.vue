@@ -10,7 +10,7 @@
       <button class="barra-opcao" @click="limpar">
         Limpar
       </button>
-      <input class="barra-filtro" placeholder="filtrar soluções" />
+      <input class="barra-filtro" placeholder="filtrar soluções" style="display: none;" />
       <div style="white-space: nowrap;">
         {{vetores ? vetores.length : '0'}} vetores carregados; 
         {{solucoes ? solucoes.length : '0'}} solucoes
