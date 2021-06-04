@@ -36,7 +36,7 @@ function proximo (conjunto, ultimo) {
 
 export async function solucao (vetores, conjuntos) {
   const obrigatoriedades = await Vetores.gerarObrigatoriedades(vetores, conjuntos)
-  const grafo = await Grafo.gerar(obrigatoriedades, vetores, conjuntos)
+  const grafo = await Grafo.Parallel_gerar(obrigatoriedades, vetores, conjuntos)
   const solucoes = []
 
   let poped = null
@@ -68,6 +68,10 @@ export async function solucao (vetores, conjuntos) {
       }
     } else {
       poped = pilha.pop()
+    }
+    if (pilha.length == 0 && poped+1 < vetores.length) {
+      pilha.push(poped+1)
+      poped = null
     }
   }
 
