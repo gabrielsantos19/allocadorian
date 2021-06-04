@@ -216,6 +216,8 @@ export default {
     atualizarObjeto (raw, conjuntoI, objetoI) {
       this.conjuntos[conjuntoI].objetos[objetoI] = raw
       this.conjuntosParsed[conjuntoI].objetos[objetoI] = JSP.parse(raw)
+      this.conjuntos.push({})
+      this.conjuntos.pop()
       ConjuntosDAO.post(this.conjuntos)
     },
     removerObjeto (conjuntoI, objetoI) {
