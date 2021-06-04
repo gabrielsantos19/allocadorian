@@ -20,15 +20,17 @@ obrigatoriedade (objeto) {
   }
 },
 
-filtrarSolucao (objeto, solucao) {
+filtrarSolucao (solucao) {
   return {
-    valor: false,
+    valor: true,
     erro: '',
   }
 },
 
-pontuarSolucao (objeto, solucao) {
-  return 0
+pontuarSolucao (solucao) {
+  return {
+    p: 0,
+  }
 },
 }`
 
