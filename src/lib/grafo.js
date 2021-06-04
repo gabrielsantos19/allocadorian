@@ -3,7 +3,7 @@ import * as Obrigatoriedades from 'src/lib/obrigatoriedades.js'
 
 
 export async function gerar (obrigatoriedades, vetores, conjuntos) {
-  const arvore = []
+  const grafo = []
   for (let i=0; i<vetores.length; ++i) {
     const lista = []
     for (let a=i+1; a<vetores.length; ++a) {
@@ -17,8 +17,8 @@ export async function gerar (obrigatoriedades, vetores, conjuntos) {
       }
     }
     lista.sort((a, b) => vetores[b].p - vetores[a].p)
-    arvore.push(lista)
+    grafo.push(lista)
   }
 
-  return arvore
+  return grafo
 }

@@ -36,7 +36,7 @@ function proximo (conjunto, ultimo) {
 
 export async function solucao (vetores, conjuntos) {
   const obrigatoriedades = await Vetores.gerarObrigatoriedades(vetores, conjuntos)
-  const arvore = await Grafo.gerar(obrigatoriedades, vetores, conjuntos)
+  const grafo = await Grafo.gerar(obrigatoriedades, vetores, conjuntos)
   const solucoes = []
 
   let poped = null
@@ -58,7 +58,7 @@ export async function solucao (vetores, conjuntos) {
       }
 
       const atual = pilha[pilha.length - 1]
-      const destinos = arvore[atual]
+      const destinos = grafo[atual]
       const destino = proximo(destinos, poped)
       if (destino == null) {
         poped = pilha.pop()
