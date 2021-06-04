@@ -5,6 +5,7 @@ export function parse (obj) {
   return {
     descricao: JSP.parse(obj.descricao),
     objetoBase: JSP.parse(obj.objetoBase),
-    objetos: obj.objetos.map(r => JSP.parse(r))
+    objetos: obj.objetos.map(r => JSP.parse(r)),
+    raw: JSON.stringify(obj),
   }
 }
