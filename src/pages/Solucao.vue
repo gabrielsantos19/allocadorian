@@ -28,7 +28,7 @@
         <span>{{solucao.i.length}} vetores</span>
       </div>
       <div v-for="(value, key) in solucao.p" class="info" :key="key">
-        <span>{{key}}: {{value}}</span>
+        <span :title="value">{{key}}: {{value}}</span>
       </div>
     </div>
 
@@ -208,21 +208,30 @@ export default {
 
 .painel {
   display: flex;
-  flex-flow: row;
+  flex-flow: row wrap;
+  font-size: 15px;
   color: white;
-  padding: 3px 10px;
+  padding: 0px 10px;
 }
 .info {
-  margin-right: 5px;
-  padding: 5px;
+  padding: 7px;
   border-radius: 7px;
   background-color: grey;
+  white-space: nowrap;
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 3px 5px;
 }
 .erro {
-  margin-right: 5px;
-  padding: 5px;
+  padding: 7px;
   border-radius: 7px;
   background-color: red;
+  white-space: nowrap;
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 3px 5px;
 }
 
 .grafico {
