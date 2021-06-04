@@ -49,13 +49,15 @@ export default {
       conjuntos: null,
       vetores: null,
       solucoes: null,
+
       tSolucoes: null,
+      solucoesLimite: 1000,
     }
   },
   computed: {
     sliced: function () {
       if (this.solucoes) {
-        return this.solucoes.slice(0, 60)
+        return this.solucoes.slice(0, this.solucoesLimite)
       }
       return []
     },
