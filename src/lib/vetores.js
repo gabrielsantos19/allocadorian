@@ -100,5 +100,7 @@ export async function gerarObrigatoriedades (vetores, conjuntos) {
     const novas = gerarObrigatoriedadesConjunto(vetores, conjunto, i)
     obrigatoriedades.push(novas)
   }
+
+  console.debug('Obrigatoriedades: ', obrigatoriedades.flat())
   return obrigatoriedades.flat()
 }
