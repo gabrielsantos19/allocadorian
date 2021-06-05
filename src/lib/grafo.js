@@ -25,16 +25,17 @@ export async function gerar (obrigatoriedades, vetores, conjuntos) {
 
 // Função para gerar o grafo de maneira paralela
 export async function Parallel_gerar (obrigatoriedades, vetores, conjuntos) {
+  const obrigatoriedadesRaw = JSON.stringify(obrigatoriedades)
+  const vetoresRaw = JSON.stringify(vetores)
   const conjuntosRaw = JSON.stringify(conjuntos, ['raw'])
-  const particoes = [[0,4],[1,4],[2,4],[3,4]]
+  const particoes = [
+    [0,4, obrigatoriedadesRaw, vetoresRaw, conjuntosRaw],
+    [1,4, obrigatoriedadesRaw, vetoresRaw, conjuntosRaw],
+    [2,4, obrigatoriedadesRaw, vetoresRaw, conjuntosRaw],
+    [3,4, obrigatoriedadesRaw, vetoresRaw, conjuntosRaw]
+  ]
 
-  let p = new Parallel(particoes, {
-    env: {
-      obrigatoriedades: obrigatoriedades,
-      vetores: vetores,
-      conjuntos: conjuntosRaw,
-    },
-  })
+  let p = new Parallel(particoes)
 
   let retorno = [[]]
   function sucesso (s) {
@@ -55,10 +56,10 @@ export async function Parallel_gerar (obrigatoriedades, vetores, conjuntos) {
 // Ela precisa ser um função sem dependências, por isso, funções que
 // estão modularizadas em diversos arquivos foram copiadas e coladas
 // como funções internas.
-function gerarContido (id) {
-  const obrigatoriedades = global.env.obrigatoriedades
-  const vetores = global.env.vetores
-  let conjuntos = JSON.parse(global.env.conjuntos)
+function gerarContido (data) {
+  const obrigatoriedades = JSON.parse(data[2])
+  const vetores = JSON.parse(data[3])
+  const conjuntos = JSON.parse(data[4])
   
   for (let i=0; i<conjuntos.length; ++i) {
     const conjunto = conjuntos[i]
@@ -67,8 +68,8 @@ function gerarContido (id) {
 
   const grafo = []
 
-  const tamanhoParticao = Math.round(vetores.length / id[1])
-  const inicial = id[0] * tamanhoParticao
+  const tamanhoParticao = Math.round(vetores.length / data[1])
+  const inicial = data[0] * tamanhoParticao
   let final = inicial + tamanhoParticao
   if (final > vetores.length) {
     final = vetores.length
