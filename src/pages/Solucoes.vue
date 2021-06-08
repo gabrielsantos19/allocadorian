@@ -17,6 +17,7 @@
         {{tSolucoes ? `em ${tSolucoes}ms` : ''}}
       </div>
     </div>
+    <div v-if="gerandoMsg">{{gerandoMsg}}</div>
     <div v-if="sliced" class="solucoes">
       <div v-for="(solucao, index) in sliced" :key="index">
         <solucao-component 
@@ -52,6 +53,7 @@ export default {
 
       tSolucoes: null,
       solucoesLimite: 1000,
+      gerandoMsg: '',
     }
   },
   computed: {
@@ -67,12 +69,14 @@ export default {
       if (this.conjuntos && this.vetores) {
         const t0 = performance.now()
 
+        this.gerandoMsg = 'Gerando soluções...'
         this.solucoes = null
         Solucoes.solucao(this.vetores, this.conjuntos)
         .then(sols => {
           SolucoesDAO.post(sols)
           this.solucoes = sols
           this.tSolucoes = performance.now() - t0
+          this.gerandoMsg = ''
         })
       }
     },
